@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS hole(id INTEGER PRIMARY KEY AUTOINCREMENT,holeNumber INTEGER,score INTEGER);
+
+ INSERT INTO hole(holeNumber,score) VALUES ('1','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('2','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('3','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('4','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('5','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('6','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('7','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('8','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('9','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('10','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('11','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('12','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('13','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('14','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('15','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('16','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('17','0');
+ INSERT INTO hole(holeNumber,score) VALUES ('18','0');

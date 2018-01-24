@@ -1,0 +1,99 @@
+<ion-menu [content]="groupDetailContent">
+    <ion-content>
+
+      <ion-toolbar>
+        <ion-title>{{goal}}</ion-title>
+      </ion-toolbar>
+      <ion-list>
+
+        <ion-list-header>
+             Game Emotions
+        </ion-list-header>
+
+        <!-- <ion-item (click)="gamePreEmotions()">
+              <h2>Pre game emotions added?</h2>
+              <h3>true</h3>
+        </ion-item>
+        <ion-item (click)="gamePostEmotions()">
+            <h2> Click here to add Post game emotions</h2>
+            <h3>true</h3>
+      </ion-item> -->
+
+
+      <button ion-item (click)="gamePreEmotions()">
+          <ion-icon item-start name="arrow-forward"></ion-icon>
+            Add pre emotions
+        </button>
+
+      <button ion-item (click)="gamePostEmotions()">
+          <ion-icon item-start name="arrow-forward"></ion-icon>
+            Add post emotions
+        </button>
+
+        <ion-list-header>
+            Game Scores
+       </ion-list-header>
+       
+       <button ion-item>
+          <ion-icon item-start name="arrow-forward"></ion-icon>
+            Last Score: {{ lastTotalScore }}
+        </button>
+
+       <button ion-item>
+          <ion-icon item-start name="arrow-forward"></ion-icon>
+          Total Score: {{totalScore}}
+        </button>
+
+        <ion-list-header>
+           Close menu
+       </ion-list-header>
+
+       <button ion-item (click)="toogleMenu()">
+          <ion-icon item-start name="arrow-forward"></ion-icon>
+          Close
+        </button>
+        
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-content #groupDetailContent>
+      <ion-header>
+        <ion-navbar hideBackButton>
+          <ion-buttons>
+              <button ion-button icon-only (click)="toogleMenu()"> 
+              <ion-icon name="menu"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-navbar>
+      </ion-header>
+      <ion-content class="background-image">
+
+          <div class="centre-text">
+              Please select the next hole
+          </div>
+
+             <ion-scroll scrollX="true" style="width:100%; height:200px;">
+              <div class="inner">
+                <ion-card *ngFor="let hole of holes" (click)="selectHole(hole.holeNumber, hole.score)" [ngClass]= "{'answered': hole.score > 0 }"> 
+                    <div *ngIf="hole.score == 0; else rated">
+                      <img [src]="background.link">
+                      Hole {{hole.holeNumber}}
+                      </div>
+                      <ng-template #rated>
+                         <p class="centred">
+                           
+                              Score {{hole.score}}
+                              <br>
+                              Hole {{hole.holeNumber}}
+      
+                         </p>
+                      </ng-template>
+                     
+               </ion-card> 
+              </div>
+              
+            </ion-scroll> 
+      
+      </ion-content>
+    </ion-content>

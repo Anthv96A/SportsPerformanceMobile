@@ -1,0 +1,22 @@
+
+<!-- <ion-header>
+
+  <ion-navbar>
+    <ion-title>Choose your goal</ion-title>
+  </ion-navbar>
+
+</ion-header> -->
+
+
+<ion-content padding class="background-image">
+
+  <div class="centre-text">
+      Please select your goal
+  </div>
+
+  <ion-list *ngFor="let goal of goals" (click)="selectedGoalFromList(goal)">
+    <ion-item class="list-item" [ngClass]="{'selected': goal === selectedGoal}">{{ goal }}</ion-item>
+  </ion-list>
+
+
+</ion-content>

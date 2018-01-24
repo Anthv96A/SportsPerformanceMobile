@@ -1,0 +1,71 @@
+page-detail {
+
+    .details{
+        height: 25%;
+        width: 100%;
+        background-color: gray;
+        opacity: 0.5;
+        position: fixed;
+        bottom: 0%;
+        left: 0%;
+        right: 0%;
+    }
+
+    .centred {
+      text-align: center;
+    }
+
+    .emphasis {
+      font-size: 24px;
+    }
+
+
+    .about-header {
+        background-color: #434954;
+        padding: 16px;
+        width: 100%;
+        min-height: 150px;
+        text-align: center;
+      }
+      
+      .about-header img {
+        max-width: 200px;
+        min-height: 115px;
+        margin-left: -15px;
+        padding: 25px 0 20px 0;
+      }
+      
+      .about-info p {
+        color: #697072;
+        text-align: left;
+      }
+      
+      .about-info ion-icon {
+        color: color($colors, primary);
+        width: 20px;
+      }
+      
+      .md,
+      .wp {
+        .about-info [text-right] {
+          margin-right: 0;
+        }
+      }
+      
+      .ios .about-info {
+        text-align: center;
+      }
+      
+      .ios .about-info ion-icon {
+        width: auto;
+        margin-right: 10px;
+      }
+
+
+      .goal-info{
+        color: white;
+        text-align: center;
+        font-size: 20px;
+        margin-top: 45px;
+      }
+}

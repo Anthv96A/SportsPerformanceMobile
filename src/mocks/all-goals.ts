@@ -1,0 +1,27 @@
+
+export const ALL_TECHNICAL_GOALS: string[] = [
+    "Driver: To hit the fairway",
+    "Fairway Woods Hybrids: To hit target",
+    "Long Irons: Onto green",
+    "Medium Irons: Onto green",
+    "Short Irons: Onto green",
+    "Approach Shots: Into green 100yrds",
+    "Approach Shots: Into green 50yrds",
+    "Approach Shots: Into green 25yrds",
+    "Chipping: To within 3ft",
+    "Greenside Bunker shots",
+    "Awkward lies in bunkers",
+    "Fairway Bunker Shots",
+    "Lob Shots",
+    "Short putts: Holing out 3ft & under",
+    "Short putts: Holing out 6ft putts",
+    "Long putts: Lag putts within 2ft",
+    "Awkward lies: Ball above feet",
+    "Awkward lies: Ball below feet",
+    "Awkward lies: Ball on uphill lie",
+    "Recovery shots",
+    "Ability to shape shots: Draw",
+    "Ability to shape shots: Fade",
+    "Ability to shape shots: High",
+    "Ability to shape shots: Low"
+]

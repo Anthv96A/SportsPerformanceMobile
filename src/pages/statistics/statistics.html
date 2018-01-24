@@ -1,0 +1,79 @@
+<ion-header>
+    <ion-navbar color="light">
+      <ion-title>
+        Your statistics
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+   
+  <!-- <ion-content *ngIf="test | async; let stats"> -->
+      <!-- <div style="display: block">
+          <canvas baseChart
+                      [data]="doughnutChartData"
+                      [labels]="doughnutChartLabels"
+                      [chartType]="doughnutChartType"
+                      (chartHover)="chartHovered($event)"
+                      (chartClick)="chartClicked($event)"></canvas>
+        </div> -->
+
+        <!-- {{ test | async | json }} -->
+          <!-- {{ stats.totalGames }} -->
+        <!-- {{ (test | async)?.totalGames }} -->
+  <!-- </ion-content> -->
+<!--
+  <ion-content>
+      {{ test2?.totalGames }}
+      {{ test2?.mostFrequentGoal }} 
+      {{ statistics[0]?.statistic }}
+      {{ statistics[0]?.goal }}
+      {{ statistics[0]?.value }}
+  </ion-content>
+
+-->
+
+<ion-content padding>
+
+        <div style="display: block">
+          <canvas baseChart
+                      [data]="doughnutChartData"
+                      [labels]="doughnutChartLabels"
+                      [chartType]="doughnutChartType"
+                      (chartHover)="chartHovered($event)"
+                      (chartClick)="chartClicked($event)">
+                    </canvas>
+        </div>
+  <ion-grid style="position: sticky; margin-top:100%; bottom: 0px; width: 100%; border: 1px solid black;" *ngIf="statistics">
+
+    <ion-row wrap style="border: 1px solid black;" *ngFor="let data of statistics">
+      <ion-col col-4 class="size" style="border: 1px solid black;">
+        {{ data.statistic  | tidy }}
+      </ion-col>
+      <ion-col col-6 class="size" style="border: 1px solid black;">
+        {{ data.goal  }}
+      </ion-col>
+      <ion-col col-2 class="size" style="border: 1px solid black;">
+        {{ data.value }}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+
+ 
+    
+<!-- 
+  <div class="about-info" *ngIf="statistics">
+      
+     
+          <ion-card *ngFor = "let s of statistics" class="stats-info">
+            <div> 
+                {{s.goal}}
+            </div>
+          </ion-card>
+      
+      
+
+
+  </div> -->
+
+ 

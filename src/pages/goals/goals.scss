@@ -1,0 +1,37 @@
+page-goals {
+
+    .background-image{
+        background-image: url('../assets/imgs/golf-home.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+    .list-item{
+        opacity: 0.7;
+        color: black;
+        border-radius: 10px;
+        border: 1px solid black;
+        margin: 0 auto;
+    }
+
+
+    .selected{
+        color:rgb(10, 50, 180);
+        border-radius: 10px;
+        border: 1px solid black;
+        margin: 0 auto;
+    }
+
+
+    .centre-text{
+        margin: 0 auto;
+        margin-top: 30px;
+        display: block;
+        color: white;
+        font-size: 30px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+}

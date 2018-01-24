@@ -1,0 +1,25 @@
+page-statistics {
+
+    .stats-info{
+        display: table-cell;
+        vertical-align: bottom;
+        border: 1px solid #f00;
+        height: 100px;
+        width: 100px;
+        bottom: 0;
+      }
+
+      .about-info p {
+        color: #697072;
+        text-align: left;
+      }
+      
+      .about-info ion-icon {
+        color: color($colors, primary);
+        width: 20px;
+      }
+
+      .size{
+        font-size: 10px;
+      }
+}

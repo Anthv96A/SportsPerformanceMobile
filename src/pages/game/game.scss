@@ -1,0 +1,19 @@
+page-game {
+
+    .background-image{
+        background-image: url('../assets/imgs/golf-home.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+
+    .centre-button{
+        margin: 0 auto;
+        margin-top: 50px;
+        display: block;
+        opacity: 0.5;
+        height: 60px;
+        width: 200px;
+    }
+}
