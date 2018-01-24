@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, LoadingController } from 'ionic-angular';
 import { Chart } from 'chart.js';
 import { StatisticsProvider } from '../../providers/statistics/statistics';
 import { Observable } from 'rxjs/Observable';
@@ -31,7 +31,7 @@ export class StatisticsPage {
   public doughnutChartData:number[] = [350, 450, 100,30,40];
   public doughnutChartType:string = 'doughnut';
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private statisticsProvider: StatisticsProvider) {
+  constructor(public navCtrl: NavController, private statisticsProvider: StatisticsProvider, private loaderCtrl:LoadingController) {
     //   this.statisticsProvider.getStatistics().subscribe((data) =>{
     //     console.log(`Full data object ${data}`);
     //     for(var key in data){
@@ -63,12 +63,28 @@ export class StatisticsPage {
 
   async ngOnInit(){
 
+    let loader = this.loaderCtrl.create({
+      content: `Loading Statistics`,
+      showBackdrop: true
+    })
+    
+
+    loader.present();
+
     this.statisticsProvider.getStatistics().subscribe((data: StatisticsDTO) =>{
+
+
+      if(data.hasOwnProperty('totalGames')){
+        this.statistics.push({statistic: 'Total Games Played', goal:'Number Of Games', value: data.totalGames})
+      }
+ 
       for(let key in data){
         for(let prop in data[key]){
-          this.statistics.push({statistic: key, goal:prop, value: data[key][prop]});
+            this.statistics.push({statistic: key, goal:prop, value: data[key][prop]});
         }
       }
+
+      loader.dismiss();
     })
 
    

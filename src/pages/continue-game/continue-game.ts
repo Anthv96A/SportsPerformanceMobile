@@ -172,7 +172,7 @@ export class ContinueGamePage extends GameMethods {
           text: 'Cancel',
           role: 'cancel',
           handler: () =>{
-
+            this.finishGameController();
           }
         }, {
           text: 'Add',

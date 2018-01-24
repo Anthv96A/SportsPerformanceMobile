@@ -1,5 +1,11 @@
 page-statistics {
 
+  canvas{
+    width: 100% !important;
+    max-width: 800px;
+    height: auto !important;
+}
+
     .stats-info{
         display: table-cell;
         vertical-align: bottom;
@@ -21,5 +27,11 @@ page-statistics {
 
       .size{
         font-size: 10px;
+      }
+
+      .align {
+        font-weight: bold;
+        text-align: center;
+        font-size: 12px 
       }
 }
