@@ -5,8 +5,6 @@ import { Hole } from '../../models/hole.model';
 import { GameProvider } from '../../providers/game/game';
 import { GameMethods } from '../../superclasses/game-methods';
 import { ServerProvider } from '../../providers/server/server';
-import { Game } from '../../models/game.model';
-import { Goal } from '../../models/goal.model';
 import { Storage } from '@ionic/storage/dist/storage';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 
@@ -88,12 +86,27 @@ export class PlayGamePage extends GameMethods {
 
       if(!this.exists){
         this.db.createGameTable().then(res =>{
+
           this.db.insertGoalName(this.goal).then((data)=>{
             this.toastCtrl.create({
               message: `Game Successfully created`,
               duration: 1500
             }).present();
-            this.storage.set('exists', 'exists');
+                this.storage.get('exists').then(val =>{
+                  if(val){
+                      this.storage.remove('exists').then(()=>{
+                        this.storage.set('exists', 'exists');
+                      })
+                  } else{
+                    this.storage.set('exists', 'exists');
+                  }
+              }).catch((err) =>{
+                this.toastCtrl.create({
+                  message: `An error occurred in local storage ${err}`,
+                  duration:10000
+                }).present();
+              })
+          
 
           }).catch((err)=>{
             this.toastCtrl.create({
@@ -101,6 +114,7 @@ export class PlayGamePage extends GameMethods {
               duration:4000
             }).present();
           })
+
       }).catch((err)=>{
         this.toastCtrl.create({
           message: `An error occurred creating table ${err}`,

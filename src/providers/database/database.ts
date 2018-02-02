@@ -6,7 +6,6 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs/Rx';
 import { Storage } from '@ionic/storage';
-import { isTrueProperty } from 'ionic-angular/util/util';
 import { Hole } from '../../models/hole.model';
 import { Game } from '../../models/game.model';
 
@@ -226,6 +225,7 @@ export class DatabaseProvider {
       }
 
       return deferred.then((data)=>{
+         this.storage.set('database_filled', false);
           return data;
       }).catch((err)=>{
           return err;

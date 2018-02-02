@@ -1,0 +1,76 @@
+
+<!-- <ion-header>
+
+  <ion-navbar>
+    <ion-title>ReviewPage</ion-title>
+  </ion-navbar>
+
+</ion-header> -->
+
+
+<ion-content padding class="background">
+  <!-- <button ion-button (click) ="finish()" >Back to home</button> -->
+
+  
+
+      <h2 id="title">Game Review</h2>
+
+
+      <!-- <div class="info">
+            <p >This how you did from today, and how you did last time</p>
+            <ion-scroll scrollX="true" style="height: 500px; width:100vw" direction="x" class="wide-as-needed">
+                <ion-row class="headerChip" style="color:white;">
+                    <div >
+                      <ion-chip>
+                         <ion-label> Test</ion-label>
+                      <div>ssdsdsd</div>
+                      </ion-chip>
+                    </div>
+                  </ion-row>
+          </ion-scroll>
+      </div> -->
+    
+
+
+      <ion-scroll scrollX="true" style="width:100%; height:100px;">
+          <div class="inner">
+            <ion-card> 
+                  <button ion-button color="light">Pre-emotions</button>
+             </ion-card> 
+             <ion-card> 
+                <button ion-button color="light">Post-emotions</button>
+           </ion-card> 
+           <ion-card> 
+              <button ion-button color="light" (click)="finish()">Back to home</button>
+         </ion-card> 
+          </div>
+          
+        </ion-scroll> 
+
+
+<ion-grid *ngIf="review">
+   
+  <ion-row>
+     <ion-col col-2 class="title"> 
+       Hole
+      </ion-col>
+     <ion-col col-5 class="title">
+       Score for this game
+      </ion-col>
+     <ion-col col-5 class="title">
+       Score for last game
+      </ion-col>
+  </ion-row>
+
+  <ion-row style="text-align:center;" *ngFor="let scores of review">
+    <ion-col col-2 class="results hole-number"><p>{{ scores.holes + 1 }}</p></ion-col>  
+    <ion-col col-5 class="results hole-score" [ngClass]="{'success': scores.gameHoles > scores.previousGameHoles, 'error': scores.previousGameHoles > scores.gameHoles, 'equal':  scores.gameHoles == scores.previousGameHoles }"><p>{{ scores.gameHoles }}</p></ion-col>  
+    <ion-col col-5 class="results hole-score" [ngClass]="{'success': scores.previousGameHoles > scores.gameHoles, 'error': scores.gameHoles > scores.previousGameHoles , 'equal': scores.previousGameHoles == scores.gameHoles}"><p>{{ scores.previousGameHoles}}</p></ion-col>  
+  </ion-row>
+
+</ion-grid>
+  <!-- <ion-row>
+    <ion-col col-2 *ngFor="let hole of holes">{{ hole }}</ion-col>
+  </ion-row> -->
+
+</ion-content>

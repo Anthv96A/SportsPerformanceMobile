@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { DatabaseProvider } from '../../providers/database/database';
 import { Hole } from '../../models/hole.model';
 import { Platform } from 'ionic-angular/platform/platform';
-import { updateDate } from 'ionic-angular/util/datetime-util';
+
 
 
 @IonicPage()

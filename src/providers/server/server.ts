@@ -22,7 +22,6 @@ export class ServerProvider {
   }
 
   getLastGame(name:string): Observable<any> {
-    const headers = new Headers({'Content-Type':'application/json'})
     return this.http.get(`${this.url}/game/last/${name}`).map((response: Response) =>{
         return response.json();
     }).catch((err) =>{ 

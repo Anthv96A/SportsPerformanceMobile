@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { GoalProvider } from '../../providers/goal/goal';
 
 
@@ -18,8 +18,7 @@ export class GoalsPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private goalService: GoalProvider,
-    public loadingCtrl: LoadingController,
+    private goalService: GoalProvider
   ) {}
 
   ionViewDidLoad() {

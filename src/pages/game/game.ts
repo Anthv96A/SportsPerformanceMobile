@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
-import { DatabaseProvider } from '../../providers/database/database';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 
@@ -11,19 +10,10 @@ import { Storage } from '@ionic/storage';
 })
 export class GamePage {
 
-
   isGameAlreadyExist: boolean;
   alreadyPlayed: boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private db : DatabaseProvider, private loadingCtrl:LoadingController, private storage:Storage, private toastCtrl:ToastController) {
-    // this.db.getDatabaseState().subscribe(rdy => {
-    //   if (rdy) {
-    //     this.db.checkTableCount().then(exist => {
-    //         this.isGameAlreadyExist = exist;
-    //     })
-    //   }
-    // })
-
+  constructor(public navCtrl: NavController, public navParams: NavParams,  private loadingCtrl:LoadingController, private storage:Storage) {
 
     storage.get('exists').then(data =>{
         if(data){
@@ -34,7 +24,6 @@ export class GamePage {
           this.isGameAlreadyExist = false;
         }
     })
-
     storage.get('played').then(data =>{
       if(data){
         let today = new Date();
@@ -44,27 +33,22 @@ export class GamePage {
 
         let stored = `${dd}/${mm}/${yyyy}`;
 
-
         if(data === stored){
-          this.alreadyPlayed = true;
+           this.alreadyPlayed = true;
         } else{ 
-          this.alreadyPlayed = false;
+            this.storage.remove('played')
         }
         
-      } else{ 
-        this.alreadyPlayed = false;
-      }
+      } 
     })
 
   }
-
 
   nativateToGoals(){
     this.navCtrl.push('GoalsPage');
   }
 
   continueGame(){
-
    let loader =  this.loadingCtrl.create({
       content: `Resuming Game`,
       showBackdrop: true

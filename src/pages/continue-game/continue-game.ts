@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, Platform, ToastController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, MenuController, Platform, ToastController, AlertController } from 'ionic-angular';
 import { DatabaseProvider } from '../../providers/database/database';
 import { Game } from '../../models/game.model';
 import { Hole } from '../../models/hole.model';
@@ -7,7 +7,7 @@ import { GameMethods } from '../../superclasses/game-methods';
 import { ServerProvider } from '../../providers/server/server';
 import { Goal } from '../../models/goal.model';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
-import { Storage } from '@ionic/storage';
+
 
 
 @IonicPage()
@@ -26,7 +26,7 @@ export class ContinueGamePage extends GameMethods {
   isComplete: boolean = false;
 
 
-  constructor(public navCtrl: NavController, public menu: MenuController, private db: DatabaseProvider, private platform:Platform, private toastCtrl: ToastController,private alertCtrl :AlertController, private serverProvider: ServerProvider, private loadingCtrl:LoadingController, private storage: Storage) {
+  constructor(public navCtrl: NavController, public menu: MenuController, private db: DatabaseProvider, private platform:Platform, private toastCtrl: ToastController,private alertCtrl :AlertController, private serverProvider: ServerProvider, private loadingCtrl:LoadingController) {
     super(menu)
     if(this.platform.is('android') || this.platform.is('ios')){
       this.db.getDatabaseState().subscribe(rdy => {
@@ -227,29 +227,36 @@ export class ContinueGamePage extends GameMethods {
             duration: 2000
         }).present();
 
-
-        try{
-
-         this.db.dropTables().then(res =>{
-            let today = new Date();
-            let dd = today.getDate();
-            let mm = today.getMonth() + 1;
-            let yyyy = today.getFullYear();
-
-            let stored = `${dd}/${mm}/${yyyy}`;
-
-            this.storage.set('played',stored);
-            this.storage.remove('exists');
-         })
-
-        } catch(e){
-          this.toastCtrl.create({
-            message: `An error occurred ${e}`,
-            duration: 3000
-          }).present();
-        }
-
         loader.dismiss();
+
+        this.navCtrl.push("ReviewPage").then(() => {
+          const index = this.navCtrl.getActive().index;
+          this.navCtrl.remove(0,index);
+        })
+
+
+        // try{
+
+        //  this.db.dropTables().then(res =>{
+        //     let today = new Date();
+        //     let dd = today.getDate();
+        //     let mm = today.getMonth() + 1;
+        //     let yyyy = today.getFullYear();
+
+        //     let stored = `${dd}/${mm}/${yyyy}`;
+
+        //     this.storage.set('played',stored);
+        //       this.storage.remove('exists');
+        //  })
+
+        // } catch(e){
+        //   this.toastCtrl.create({
+        //     message: `An error occurred ${e}`,
+        //     duration: 3000
+        //   }).present();
+        // }
+
+        
     }, error =>{
         this.toastCtrl.create({
           message: `Oops! An error occured:  ${error}`,

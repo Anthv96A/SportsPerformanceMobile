@@ -1,8 +1,7 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, LoadingController } from 'ionic-angular';
 import { Chart } from 'chart.js';
 import { StatisticsProvider } from '../../providers/statistics/statistics';
-import { Observable } from 'rxjs/Observable';
 import { StatisticsDTO } from '../../models/statisticsDTO.model';
 
 
@@ -14,11 +13,13 @@ import { StatisticsDTO } from '../../models/statisticsDTO.model';
 })
 export class StatisticsPage {
 
+  test(){
+    this.navCtrl.push('ReviewPage')
+  }
+
 
    statistics: {  statistic: string, goal: string, value: number }[] = [];
 
-
- //statistics: Observable<{statistic: string, goal: string, value: number}>
 
 
   public doughnutChartLabels:string[] = [
@@ -71,7 +72,7 @@ export class StatisticsPage {
 
     loader.present();
 
-    this.statisticsProvider.getStatistics().subscribe((data: StatisticsDTO) =>{
+    this.statisticsProvider.getStatistics().subscribe((data: StatisticsDTO) => {
 
 
       if(data.hasOwnProperty('totalGames')){
