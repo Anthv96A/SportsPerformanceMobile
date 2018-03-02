@@ -11,7 +11,7 @@ import { Platform } from 'ionic-angular/platform/platform';
   selector: 'page-detail',
   templateUrl: 'detail.html',
 })
-export class DetailPage {
+export class DetailPage  {
 
   selectedHole: Promise<Hole[]>;
   passedScore: number;
@@ -21,7 +21,10 @@ export class DetailPage {
   selectedGoal:string;
   lastScore: Promise<Hole[]>;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private toastCtrl: ToastController, private platform: Platform) {
+  constructor(
+    public navCtrl: NavController, public navParams: NavParams, 
+    private db: DatabaseProvider, private toastCtrl: ToastController, 
+    private platform: Platform) {
      
    this.passedScore = this.navParams.get('score'); 
 
@@ -40,7 +43,7 @@ export class DetailPage {
   }
 
 
-  async loadData(){
+  loadData(){
     this.selectedId = parseInt(this.navParams.get('number'));
     this.selectedHole = this.db.fetchHole(this.selectedId);
     this.lastScore = this.db.fetchPreviousHole(this.selectedId);
@@ -56,7 +59,7 @@ export class DetailPage {
 
   ionViewWillLeave(){
    
-    if(this.hasChanged){
+    if(this.hasChanged && this.selectedScore !== 0){
       let hole = new Hole(this.selectedId, this.selectedScore)
       
       this.db.updateHole(hole).then((data)=>{

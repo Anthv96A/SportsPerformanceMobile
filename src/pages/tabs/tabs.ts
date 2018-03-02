@@ -13,10 +13,12 @@ export class TabsPage {
   // These tab roots are the name of the page name in string format
   tab1root: string;
   tab2root: string;
+  tab3root: string
 
   constructor() {
     this.tab1root = 'StatisticsPage';
     this.tab2root = 'GamePage';
+    this.tab3root = 'PreviousGamesPage'
   }
 
 }

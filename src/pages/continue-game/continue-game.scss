@@ -1,5 +1,7 @@
 page-continue-game {
 
+    $SIDEMENU_TRANSPARENCY: rgba(255,255,255,0.4);
+
     .background-image{
         background-image: url('../assets/imgs/golf-home.jpg');
         background-repeat: no-repeat;
@@ -15,6 +17,28 @@ page-continue-game {
         width: 50%;
         border: 1px solid black;
         margin: 0 auto;
+    }
+
+    .subheader{
+        font-size: 23px;
+    }
+
+    .side-menu-item{
+        background:none;
+        color:black;
+        font-weight:300;
+        border:0px;
+        .item-content{
+            background:none;
+            &.activated{
+                background: $SIDEMENU_TRANSPARENCY;
+            }
+        }
+        &.active-page-highlight{
+            .item-content{
+                background: $SIDEMENU_TRANSPARENCY;
+            }
+        }
     }
 
 

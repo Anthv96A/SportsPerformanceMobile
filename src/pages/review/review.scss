@@ -16,8 +16,6 @@ page-review {
         color: $text;
         margin-bottom: 20px;
     }
-
-
     .header{
         background-color: grey;
         color: $text;
@@ -25,18 +23,15 @@ page-review {
         text-align: $aligned;
         font-size: $size;
     }
-
     .text{
         color: $text;
         margin-left: 30px;
         font-size: $size;
     }
-
     .text-centre{
         color: $text;
         font-size: $size;
     }
-
     .hole-number {
         background-color: lightgray !important;
         border-left: none !important;
@@ -47,87 +42,51 @@ page-review {
                 border-radius: 50%;
                 border:1px solid black;
                 font-size: 20px;
-                // width: 20px;
-                // height: 20px;
-                // background-color: white;
-                // border: 1px solid black;
-                // border-radius: 70px;
             }
       }
-
       .success{
         background-color: lightgreen !important;
       }
-
       .error{
         background-color: red !important;
       }
-
       .equal {
         background-color: lightblue !important;
       }
-
       .hole-score {
-        // background-color: rgb(201, 233, 243) !important;
-          
             p {
-              //  margin: 10px;
                 margin-top: 25px;
                 font-size: 20px;
-              //  background-color: white;
-
-                // border:1px solid black;
-                // height: 50px;
-             //   bottom: 0px;
-              //  font-size: 20px;
-               // margin-left: 35%;
-                // width: 20px;
-                // height: 20px;
-                // background-color: white;
-                // border: 1px solid black;
-                // border-radius: 70px;
             }
       }
-
-
     .info{
         color: black;
         text-align: $aligned;
-    //    background-color: $text;
     }
-
     .wide-as-needed {
         overflow: scroll;
         white-space: nowrap;
       }
-
       .headerChipGray{
         ion-chip.chip.chip-md{
             margin: 2px 2px 2px 2px;
             border-radius: 10px;
             border: 1px solid gray;
-        //    background: white;
         }
         ion-chip.chip.chip-ios{
             margin: 2px 2px 2px 2px;
             border-radius: 10px;
             border: 1px solid gray;
-          //  background: white;
         }
     }
-
     .inner {
          width: 150px;
-        // height: 150px;
         margin-top: 30px;
       ion-card{
          display: table-cell;
          border: 3px solid black;
       }
     }
-
-
-
     ion-row{
         width: 100%;
         font-size: $size;
@@ -136,19 +95,15 @@ page-review {
         color: $text;
         height: auto;
     }
-
     .title{
         margin-bottom: 15px;
     }
-
     .results {
-        // border: 1px solid rgb(218, 241, 248);
         border-left: 1px solid #f2f2f2;
         border-bottom: 1px solid #f2f2f2;
         background-color: #fff;
         color: black;
     }
-
     .card-md{
         background: none !important;
     }

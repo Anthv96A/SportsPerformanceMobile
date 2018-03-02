@@ -1,0 +1,23 @@
+
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{game?.name}}</ion-title>
+    <ion-buttons end>
+        <button ion-button (click)="gameEmotions()">
+            <ion-icon name="menu"></ion-icon>
+        </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+<ion-content padding>
+  <ion-list>
+    <ion-item *ngFor="let hole of game?.holes">
+        <ion-avatar item-start>
+        <img [src]="background.link">
+      </ion-avatar>
+      <h2>Hole number: {{ hole.holeNumber }}</h2>
+      <h3>Your score: {{ hole.score }}</h3>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,7 +1,7 @@
 export const MOCK_START_GAME =  [
     {
         holeNumber: 1,
-        score: 1,
+        score: 0,
     },
     {
         holeNumber: 2,

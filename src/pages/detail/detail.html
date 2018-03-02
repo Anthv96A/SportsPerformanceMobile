@@ -1,25 +1,3 @@
-<!-- <ion-header>
-
-  <ion-navbar>
-    <ion-title>Hole {{selectedId}}</ion-title>
-  </ion-navbar>
-
-</ion-header>
-
-
-<ion-content padding *ngFor="let selected of selectedHole">
-
-  <ion-list>
-      <ion-item>{{ selected.holeNumber }}</ion-item>
-      <ion-item>{{ selected.score }}</ion-item>
-  </ion-list>
-
-  <div class="details">
-    here
-  </div>
-
-</ion-content> -->
-
 
 <ion-header>
     <ion-navbar>
@@ -27,48 +5,17 @@
         <ion-icon name="menu"></ion-icon>
       </button>
       <ion-title>Hole {{selectedId}}</ion-title>
-      <ion-buttons end>
-        <button ion-button icon-only>
-          <ion-icon name="more"></ion-icon>
-        </button>
-      </ion-buttons>
     </ion-navbar>
   </ion-header>
   
   <ion-content>
     <div class="about-header">
-      <!-- <img src="assets/img/ionic-logo-white.svg" alt="ionic logo"> -->
       <div class="goal-info">
         {{ selectedGoal }}
       </div>
     </div>
     <div padding class="about-info centred">
       <h4>Rate your performance</h4>
-      <!-- <h4>Hole details {{hole?.score}}</h4> -->
-  
-      <!-- <ion-list no-lines>
-        <ion-item>
-          <ion-icon name="information-circle" item-start></ion-icon>
-          <ion-label>Difficulty</ion-label>
-          <ion-select [(ngModel)]="hole.difficulty"> 
-            <ion-option value="Easy">Easy</ion-option>
-            <ion-option value="Moderate">Moderate</ion-option>
-            <ion-option value="Hard">Hard</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-list>
-   -->
-
-   <!-- <ion-list>
-    <ion-item>
-      <ion-label floating>Rate Score </ion-label>
-      <ion-range min="0" max="5" step="1" snaps="true" color="secondary" [(ngModel)]="hole.score | async">
-        <ion-label range-left>0</ion-label>
-        <ion-label range-right>5</ion-label>
-      </ion-range>
-    </ion-item>
-   </ion-list> -->
-
 
     <ion-list>
       <ion-item *ngFor="let hole of selectedHole | async">
@@ -89,17 +36,5 @@
      <ion-label class="centred emphasis">Last Score</ion-label>
      <ion-item class="centred emphasis" *ngFor ="let hole of lastScore | async" >{{ hole.score }}</ion-item>
    </ion-list>
-
-
-
-      <!-- <p>
-        The Ionic Conference is a one-day conference featuring talks from the
-        Ionic team. It is focused on Ionic applications being built with
-        Ionic 2. This includes migrating apps from Ionic 1 to Ionic 2,
-        Angular concepts, Webpack, Sass, and many other technologies used
-        in Ionic 2. Tickets are completely sold out, and we’re expecting
-        more than 1000 developers – making this the largest Ionic
-        conference ever!
-      </p> -->
     </div>
   </ion-content>

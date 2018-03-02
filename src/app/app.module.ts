@@ -9,6 +9,7 @@ import { MyApp } from './app.component';
 import { SQLitePorter } from '@ionic-native/sqlite-porter';
 import { SQLite } from '@ionic-native/sqlite';
 import { DatabaseProvider } from '../providers/database/database';
+import { URLS } from '../assets/server.link';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { DatabaseProvider } from '../providers/database/database';
     SQLitePorter,
     SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DatabaseProvider
+    DatabaseProvider,
+    URLS
   ]
 })
 export class AppModule {}

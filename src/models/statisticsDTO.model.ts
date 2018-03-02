@@ -5,7 +5,5 @@ export class StatisticsDTO {
         public leastFrequentGoal: Map<string,Object>,
         public highestScoredGoal: Map<string,Object>,
         public lowestScoredGoal: Map<string,Object>
-    ){
-
-    }
+    ){}
 }

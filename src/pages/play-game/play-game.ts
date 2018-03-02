@@ -7,6 +7,8 @@ import { GameMethods } from '../../superclasses/game-methods';
 import { ServerProvider } from '../../providers/server/server';
 import { Storage } from '@ionic/storage/dist/storage';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
+import { Goal } from '../../models/goal.model';
+import { Game } from '../../models/game.model';
 
 
 @IonicPage()
@@ -21,9 +23,7 @@ export class PlayGamePage extends GameMethods {
   goal: string;
   preEmotions: string;
   postEmotions: string;
-
-  totalScore:number;
-  holes: Hole[] = [];
+  isGameDone: boolean = false;
 
   constructor(
     public navCtrl: NavController, 
@@ -31,16 +31,15 @@ export class PlayGamePage extends GameMethods {
     public menu: MenuController,
     public gameService:GameProvider,
     private db: DatabaseProvider,
-    private toastCtrl:ToastController, 
+    public toastCtrl:ToastController, 
     private platform: Platform, 
     private alertCtrl :AlertController,
-    private serverProvider: ServerProvider,
+    public serverProvider: ServerProvider,
     private storage: Storage,
     public loadingCtrl: LoadingController) {
 
-    super(menu)
+    super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl)
     this.goal = this.navParams.get('selected');
-   // this.fetchLastGame(this.goal);
 
     let loader = this.loadingCtrl.create({
       content: `Starting game with ${this.goal} as goal`,
@@ -73,9 +72,15 @@ export class PlayGamePage extends GameMethods {
     this.db.getAllHoles().then(data =>{
       this.holes = data;
       this.totalScore = this.getTotalScore(this.holes);
-    })
-  }
+      this.isGameDone = this.checkIfGameIsDone(this.holes);
 
+      if(this.isGameDone){
+        this.gamePostEmotions();
+      }
+      
+    })
+    
+  }
 
 
   loadGameData() {
@@ -85,14 +90,14 @@ export class PlayGamePage extends GameMethods {
   
 
       if(!this.exists){
-        this.db.createGameTable().then(res =>{
+        this.db.createGameTable().then(res => {
 
-          this.db.insertGoalName(this.goal).then((data)=>{
+          this.db.insertGoalName(this.goal).then((data) => {
             this.toastCtrl.create({
               message: `Game Successfully created`,
               duration: 1500
             }).present();
-                this.storage.get('exists').then(val =>{
+                this.storage.get('exists').then(val => {
                   if(val){
                       this.storage.remove('exists').then(()=>{
                         this.storage.set('exists', 'exists');
@@ -100,7 +105,7 @@ export class PlayGamePage extends GameMethods {
                   } else{
                     this.storage.set('exists', 'exists');
                   }
-              }).catch((err) =>{
+              }).catch((err) => {
                 this.toastCtrl.create({
                   message: `An error occurred in local storage ${err}`,
                   duration:10000
@@ -108,14 +113,14 @@ export class PlayGamePage extends GameMethods {
               })
           
 
-          }).catch((err)=>{
+          }).catch((err) => {
             this.toastCtrl.create({
               message: `An error occurred ${err}`,
               duration:4000
             }).present();
           })
 
-      }).catch((err)=>{
+      }).catch((err) => {
         this.toastCtrl.create({
           message: `An error occurred creating table ${err}`,
           duration:4000
@@ -127,6 +132,38 @@ export class PlayGamePage extends GameMethods {
       }
        
     })
+  }
+
+  viewPreEmotions(){
+    let alert = this.alertCtrl.create({
+      title: 'Pre-emotions',
+      message: `
+      <p style="text-align:center">
+       ${this.preEmotions}
+      </p>
+
+       `,
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
+  viewPostEmotions(){
+    if(this.postEmotions === undefined){
+      this.postEmotions = 'None'
+    }
+
+    let alert = this.alertCtrl.create({
+      title: 'Pre-emotions',
+      message: `
+      <p style="text-align:center">
+       ${this.postEmotions}
+      </p>
+
+       `,
+      buttons: ['OK']
+    });
+    alert.present();
   }
 
 
@@ -145,21 +182,23 @@ export class PlayGamePage extends GameMethods {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () =>{
-
+          handler: () => {
+            this.preEmotions = 'None'
           }
         }, {
           text: 'Add',
-          handler: data =>{
-            this.preEmotions = data.preEmotions;
+          handler: data => {
+
+            if(data){
+              this.preEmotions = data.preEmotions;
+            }
+           
             this.updateEmotions();
           }
         }
       ]
     }).present();
   }
-
-
 
   gamePostEmotions(){
     this.alertCtrl.create({
@@ -177,13 +216,18 @@ export class PlayGamePage extends GameMethods {
           text: 'Cancel',
           role: 'cancel',
           handler: () =>{
-
+            this.postEmotions = 'None'
+            this.finishGame();
           }
         }, {
           text: 'Add',
           handler: data =>{
-            this.postEmotions = data.postEmotions;
+
+            if(data){
+              this.postEmotions = data.postEmotions;
+            } 
             this.updateEmotions();
+            this.finishGame();
           }
         }
       ]
@@ -195,7 +239,7 @@ export class PlayGamePage extends GameMethods {
   }
 
   updateEmotions(){
-      this.db.insertEmotions(this.preEmotions,this.postEmotions,this.goal).then((data) =>{
+      this.db.insertEmotions(this.preEmotions,this.postEmotions,this.goal).then((data) => {
           this.toastCtrl.create({
             message:'Emotions added successfully',
             duration: 2000
@@ -217,6 +261,10 @@ export class PlayGamePage extends GameMethods {
     if(this.exists){
       // Refresh SQLite
       this.refreshData();
+
+      if(this.isGameDone){
+        this.gamePostEmotions();
+      }
     }
 
     else{
@@ -234,31 +282,15 @@ export class PlayGamePage extends GameMethods {
   }
 
   private checkIfGameExists(){
-    this.db.checkTableCount().then(created =>{
-        this.exists = created;
+    this.db.checkTableCount().then(isCreated => {
+        this.exists = isCreated;
     })
   }
 
-
-  // mock(){
-
-  //   let goal: Goal = new Goal('Driver: To hit the fairway');
-
-  //   let goals: Goal[] = [goal];
-
-  //   let game:Game = new Game('Driver: To hit the fairway','some','none',this.totalScore,this.holes,goals);
-
-  //    this.serverProvider.finishGame(game).subscribe((data)=>{
-  //          console.dir(data);
-  //    })
-  
-  // }
-
-
   fetchLastGame(goal:string){
-    this.serverProvider.getLastGame(goal).subscribe((data) =>{
+    this.serverProvider.getLastGame(goal).subscribe((data) => {
      
-        this.db.createPreviousGameTable().then(() =>{
+        this.db.createPreviousGameTable().then(() => {
 
           if(data.holes.length == 0){
             this.db.fillPreviousDatabase();
@@ -266,14 +298,22 @@ export class PlayGamePage extends GameMethods {
           }
 
             this.lastTotalScore = data.totalScore;
-            let holes = data.holes;
-            this.db.storagePreviousGame(holes).then(() =>{ })
-        
+            this.db.storagePreviousGame(data.holes);
         })
-    
     })
+  }
 
-
+  finishGame(){
+    let goal: Goal = new Goal(this.goal);
+    let goals: Goal[] = [goal];
+    let game: Game = new Game(
+      this.goal,
+      this.preEmotions,
+      this.postEmotions,
+      this.totalScore,
+      this.holes,
+      goals);
+    this.sendToServer(game);
   }
 
 

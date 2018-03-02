@@ -13,7 +13,7 @@ export class GamePage {
   isGameAlreadyExist: boolean;
   alreadyPlayed: boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,  private loadingCtrl:LoadingController, private storage:Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private loadingCtrl:LoadingController, private storage:Storage) {
 
     storage.get('exists').then(data =>{
         if(data){

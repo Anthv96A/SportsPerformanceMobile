@@ -1,10 +1,38 @@
 page-statistics {
 
+  min-height: 100%;
+  
+
+  .content .scroll-content {
+    overflow-y: auto;
+}
+.content-ios .scroll-content {
+    overflow-y: scroll;
+}
+
+
+  ion-content{
+    overflow-y: scroll !important;
+    background-color: whitesmoke !important;
+  }
+
+
   canvas{
     width: 100% !important;
     max-width: 800px;
     height: auto !important;
+    overflow-y: scroll !important;
 }
+
+    .col-border{
+      //border: 1px solid black;
+    }
+
+    ion-grid{
+      margin-top: 8px;
+      border: 1px solid black;
+      background-color: white;
+    }
 
     .stats-info{
         display: table-cell;
@@ -32,6 +60,8 @@ page-statistics {
       .align {
         font-weight: bold;
         text-align: center;
-        font-size: 12px 
+        font-size: 12px;
+        margin-right: -20px;
+        text-decoration: underline;
       }
 }

@@ -6,39 +6,39 @@
     </ion-toolbar>
     <ion-list>
 
-      <ion-list-header>
+      <ion-list-header class="side-menu-item subheader">
            Game Emotions
       </ion-list-header>
 
-      <button ion-item (click)="gamePreEmotions()">
+      <button ion-item (click)="viewPreEmotions()" class="side-menu-item">
           <ion-icon item-start name="arrow-forward"></ion-icon>
-            Add pre emotions
+            View pre emotions
         </button>
 
-      <button ion-item (click)="gamePostEmotions()">
+      <button ion-item (click)="viewPostEmotions()" class="side-menu-item">
           <ion-icon item-start name="arrow-forward"></ion-icon>
-            Add post emotions
+            View post emotions
         </button>
 
-      <ion-list-header>
+      <ion-list-header class="side-menu-item subheader">
           Game Scores
      </ion-list-header>
      
-     <button ion-item>
+     <button ion-item class="side-menu-item">
         <ion-icon item-start name="arrow-forward"></ion-icon>
           Last Score: {{ lastTotalScore }}
       </button>
 
-     <button ion-item>
+     <button ion-item class="side-menu-item">
         <ion-icon item-start name="arrow-forward"></ion-icon>
         Total Score: {{totalScore}}
       </button>
 
-      <ion-list-header>
+      <ion-list-header class="side-menu-item subheader">
          Close menu
      </ion-list-header>
 
-     <button ion-item (click)="toogleMenu()">
+     <button ion-item (click)="toogleMenu()" class="side-menu-item">
         <ion-icon item-start name="arrow-forward"></ion-icon>
         Close
       </button>

@@ -18,16 +18,16 @@ import { LoadingController } from 'ionic-angular/components/loading/loading-cont
 export class ContinueGamePage extends GameMethods {
 
   games: Game[];
-  holes: Hole[] = [];
-  totalScore: number;
+  // holes: Hole[] = [];
+  // totalScore: number;
   game: Game;
   
 
   isComplete: boolean = false;
 
 
-  constructor(public navCtrl: NavController, public menu: MenuController, private db: DatabaseProvider, private platform:Platform, private toastCtrl: ToastController,private alertCtrl :AlertController, private serverProvider: ServerProvider, private loadingCtrl:LoadingController) {
-    super(menu)
+  constructor(public navCtrl: NavController, public menu: MenuController, public db: DatabaseProvider, private platform:Platform, public toastCtrl: ToastController, public alertCtrl :AlertController, public serverProvider: ServerProvider, public loadingCtrl:LoadingController) {
+    super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl)
     if(this.platform.is('android') || this.platform.is('ios')){
       this.db.getDatabaseState().subscribe(rdy => {
         if (rdy) {
@@ -40,12 +40,12 @@ export class ContinueGamePage extends GameMethods {
 
    ionViewDidEnter() {
      this.refreshData();
-   }
+   }  
 
 
    async resumeGame(){
      try{
-      this.games = await this.db.selectFromGame()
+      this.games = await this.db.selectFromGame();
       this.refreshData();
      } catch(e){
         this.toastCtrl.create({
@@ -71,8 +71,6 @@ export class ContinueGamePage extends GameMethods {
       this.isComplete = this.checkIfGameIsDone(this.holes);
 
       if(this.isComplete){
-       // this.finishGameController();
-
        if(this.game.postEmotions === null || undefined){
          this.gamePostEmotions();
        } else{
@@ -125,15 +123,15 @@ export class ContinueGamePage extends GameMethods {
   }
 
 
-  checkIfGameIsDone(holes: Hole[]): boolean{
+  // checkIfGameIsDone(holes: Hole[]): boolean{
 
-    for(let i =0; i < holes.length; i++){
-      if(holes[i].score == 0){
-        return false;
-      }
-    }
-    return true;
-  }
+  //   for(let i =0; i < holes.length; i++){
+  //     if(holes[i].score == 0){
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
 
 
   finishGameController(){
@@ -155,6 +153,45 @@ export class ContinueGamePage extends GameMethods {
       ]
     }).present();
   }
+
+
+  viewPreEmotions(){
+
+    if( this.game.preEmotions === undefined || this.game.preEmotions === null){
+      this.game.preEmotions = 'None'
+    }
+
+    let alert = this.alertCtrl.create({
+      title: 'Pre-emotions',
+      message: `
+      <p style="text-align:center">
+       ${this.game.preEmotions}
+      </p>
+
+       `,
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
+  viewPostEmotions(){
+    if(this.game.postEmotions === undefined || this.game.preEmotions === null){
+      this.game.postEmotions = 'None'
+    }
+
+    let alert = this.alertCtrl.create({
+      title: 'Pre-emotions',
+      message: `
+      <p style="text-align:center">
+       ${this.game.postEmotions}
+      </p>
+
+       `,
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
 
   gamePostEmotions(){
     this.alertCtrl.create({
@@ -193,7 +230,7 @@ export class ContinueGamePage extends GameMethods {
           message:`Emotions added successfully`,
           duration: 2000
         }).present();
-    }).catch((err) =>{
+    }).catch((err) => {
       this.toastCtrl.create({
         message: `An error occurred creating table ${err}`,
         duration:3000
@@ -204,12 +241,12 @@ export class ContinueGamePage extends GameMethods {
 
  finishGame(){
 
-  let loader = this.loadingCtrl.create({
-    content: `Please wait ...`,
-    showBackdrop: true
-  })
+  // let loader = this.loadingCtrl.create({
+  //   content: `Please wait ...`,
+  //   showBackdrop: true
+  // })
 
-  loader.present();
+  // loader.present();
 
   let goal: Goal = new Goal(this.game.name);
   let goals: Goal[] = [goal];
@@ -221,60 +258,28 @@ export class ContinueGamePage extends GameMethods {
     this.holes,
     goals);
 
-    this.serverProvider.finishGame(game).subscribe((data) =>{
-        this.toastCtrl.create({
-            message: "Successfully finished your game",
-            duration: 2000
-        }).present();
+    this.sendToServer(game);
 
-        loader.dismiss();
+    // this.serverProvider.finishGame(game).subscribe((data) =>{
+    //     this.toastCtrl.create({
+    //         message: "Successfully finished your game",
+    //         duration: 2000
+    //     }).present();
 
-        this.navCtrl.push("ReviewPage").then(() => {
-          const index = this.navCtrl.getActive().index;
-          this.navCtrl.remove(0,index);
-        })
+    //     loader.dismiss();
 
-
-        // try{
-
-        //  this.db.dropTables().then(res =>{
-        //     let today = new Date();
-        //     let dd = today.getDate();
-        //     let mm = today.getMonth() + 1;
-        //     let yyyy = today.getFullYear();
-
-        //     let stored = `${dd}/${mm}/${yyyy}`;
-
-        //     this.storage.set('played',stored);
-        //       this.storage.remove('exists');
-        //  })
-
-        // } catch(e){
-        //   this.toastCtrl.create({
-        //     message: `An error occurred ${e}`,
-        //     duration: 3000
-        //   }).present();
-        // }
-
-        
-    }, error =>{
-        this.toastCtrl.create({
-          message: `Oops! An error occured:  ${error}`,
-          duration: 3000
-      }).present();
-      loader.dismiss();
-    })
+    //     this.navCtrl.push("ReviewPage",{game:game}).then(() => {
+    //       const index = this.navCtrl.getActive().index;
+    //       this.navCtrl.remove(0,index);
+    //     })   
+    // }, error =>{
+    //     this.toastCtrl.create({
+    //       message: `Oops! An error occured:  ${error}`,
+    //       duration: 3000
+    //   }).present();
+    //   loader.dismiss();
+    // })
   
-
-  // let goal: Goal = new Goal('Driver: To hit the fairway');
-
-  // let goals: Goal[] = [goal];
-
-  // let game:Game = new Game('Driver: To hit the fairway','some','none',this.totalScore,this.holes,goals);
-
-  //  this.serverProvider.finishGame(game).subscribe((data)=>{
-  //        console.dir(data);
-  //  })
 }
 
 
