@@ -39,7 +39,7 @@ export class ServerProvider {
   getAllGamesWithinPeriod(from:string, to:string): Observable<any>{
       return this.http.get(`${this.url}/game/games-period/${from}/${to}`).map((response:Response) => {
           let games: Game[] = response.json();
-          let gamesTransformed = [];
+          let gamesTransformed: Game[] = [];
           for(let game of games){
               gamesTransformed.push(new Game(game.name, game.preEmotions, game.postEmotions, game.totalScore, game.holes, game.goals, game.datePlayed))
           }
