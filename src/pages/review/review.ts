@@ -17,6 +17,7 @@ export class ReviewPage {
 
   review: { holes:number, gameHoles: number, previousGameHoles: number }[] = [];
   game: Game;
+  finished: boolean = false;
 
   constructor(
     public navCtrl: NavController,public navParams: NavParams,private db: DatabaseProvider,
@@ -60,6 +61,46 @@ export class ReviewPage {
     }
 
   }
+
+
+  authoriseLeavePage(): void{
+    this.alertCtrl.create({
+        title: 'Are you sure?',
+        message: 'Do you want to return back to main menu?',
+        buttons: [
+          {
+            text: "No",
+            handler: () => {
+                this.toastCtrl.create({
+                    message: 'Dismissed',
+                    duration: 2000
+                }).present();
+            }
+          },{
+            text: 'Yes',
+            handler:() => {
+              this.finished = true;
+              this.finish();
+            }
+          }
+        ]
+    }).present();
+  }
+
+
+  ionViewCanLeave() : boolean | Promise<void> {
+
+    if(this.finished){
+      return true;
+    } else {
+      return false;
+    }
+
+
+  }
+
+
+
 
 
  async finish() {

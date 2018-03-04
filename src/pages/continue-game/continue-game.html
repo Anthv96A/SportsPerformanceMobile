@@ -42,6 +42,15 @@
         <ion-icon item-start name="arrow-forward"></ion-icon>
         Close
       </button>
+
+      <ion-list-header *ngIf="isComplete" class="side-menu-item subheader">
+        Finish Game
+      </ion-list-header>
+
+      <button *ngIf="isComplete" ion-item (click)="determine()" class="side-menu-item">
+        <ion-icon item-start name="arrow-forward"></ion-icon>
+        Finish 
+      </button>
       
     </ion-list>
   </ion-content>
@@ -63,17 +72,7 @@
             Please select the next hole
         </div>
 
-    
-<!-- 
-           <ion-scroll scrollX="true" style="width:100%; height:200px;">
-            <div class="inner">
-              <ion-card *ngFor="let hole of holes" (click)="selectHole(hole.holeNumber)"> 
-                <img [src]="background.link">
-                  Hole {{hole.holeNumber}}
-             </ion-card> 
-            </div>
-            
-          </ion-scroll>  -->
+  
 
           <ion-scroll scrollX="true" style="width:100%; height:200px;">
               <div class="inner">

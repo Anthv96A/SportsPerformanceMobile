@@ -18,13 +18,13 @@
   <ion-card>
     <ion-item>
         <ion-label>Games from</ion-label>
-        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="fromDate" ></ion-datetime>
+        <ion-datetime displayFormat="YYYY-MM-DD" min = "2018-01-01" [(ngModel)]="fromDate" ></ion-datetime>
       </ion-item>
     </ion-card>
     <ion-card>
       <ion-item>
           <ion-label>Games to</ion-label>
-          <ion-datetime displayFormat="YYYY-MM-DD" min = {{fromDate}} [(ngModel)]="toDate"></ion-datetime>
+          <ion-datetime displayFormat="YYYY-MM-DD" min = {{fromDate}} max = {{maximumDate}} [(ngModel)]="toDate"></ion-datetime>
         </ion-item>
     </ion-card>
         <ion-item>

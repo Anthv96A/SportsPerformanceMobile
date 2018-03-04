@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, LoadingController, AlertController, ToastController, Platform } from 'ionic-angular';
 import { Game } from '../../models/game.model';
-import { Hole } from '../../models/hole.model';
-import { Goal } from '../../models/goal.model';
 import { ServerProvider } from '../../providers/server/server';
 import { Subscription } from 'rxjs';
+import { Network } from '@ionic-native/network';
 
 
 
@@ -17,35 +16,59 @@ export class PreviousGamesPage{
 
   called: boolean = false; 
   preDefinedDates: boolean = false;
+  isOnline: boolean = true;
+  maximumDate: any;
 
   background = { link: 'assets/imgs/golf-home.jpg' };
   subscription$: Subscription;
+  connected$: Subscription;
+  disconnected$: Subscription;
 
   fromDate: string;
   toDate: string;
 
   games:Game[] = [];
 
-  constructor(public navCtrl: NavController, private serverProvider: ServerProvider,private loaderCtrl: LoadingController, public alertCtrl: AlertController) {}
+  constructor(
+    public navCtrl: NavController,
+    private serverProvider: ServerProvider,
+    private loaderCtrl: LoadingController,
+    public alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private network: Network,
+    private platform: Platform) {}
   
   ionViewDidLoad() {
-     
     let obj =  this.initialiseDates();
     this.fromDate = obj.from;
     this.toDate = obj.to;
+    this.maximumDate = new Date().toISOString();
+  }
+
+  ionViewDidEnter(){
+    this.watchNetwork();
+    console.log(this.isOnline);
   }
 
   search(){
 
+    if(!this.isOnline){
+      this.toastCtrl.create({
+          message: `Unable to fetch results offline, please try again later.`,
+          showCloseButton: true,
+          closeButtonText: 'Ok',
+          cssClass: "toast-container"
+      }).present();
+      return;
+    }
+
     let loader = this.loaderCtrl.create({
       content: `Loading Data`,
       showBackdrop: true
-    })
-    if(this.games.length !== 0){
-      while(this.games.length !== 0){
-        this.games.pop();
-      }
-    }
+    });
+    loader.present();
+    this.clearData();
+   
     this.subscription$ = this.serverProvider.getAllGamesWithinPeriod(this.fromDate, this.toDate).subscribe((data: Game[]) =>{
         this.games = data;
         this.called = true;
@@ -113,7 +136,9 @@ export class PreviousGamesPage{
 
 
   ionViewWillLeave(){
-    this.called ? this.subscription$.unsubscribe() : console.log("Component Destroyed")
+    (this.subscription$ !== undefined) ? this.subscription$.unsubscribe() : console.log("Component Destroyed");
+    (this.connected$ !== undefined) ? this.connected$.unsubscribe() : console.log("Left page");
+    (this.disconnected$ !== undefined) ? this.disconnected$.unsubscribe(): console.log("Left page");
   }
 
   private initialiseDates(){
@@ -125,13 +150,47 @@ export class PreviousGamesPage{
     to.setDate(data.getDate());
 
     let from = new Date();
-    from.setDate(data.getDate())
+    from.setDate(data.getDate() - 28 )
 
     obj.from = from.toISOString();
     obj.to = to.toISOString();
 
     return obj;
 
+  }
+
+  private clearData(){
+    if(this.games.length !== 0){
+      while(this.games.length !== 0){
+        this.games.pop();
+      }
+    }
+  }
+
+  watchNetwork(){
+
+    if(this.platform.is('android') || this.platform.is('ios')){
+      this.platform.ready().then(() => {
+        setTimeout(() => {
+            this.disconnected$ = this.network.onDisconnect().subscribe(() =>{
+              this.isOnline = false;
+              this.toastCtrl.create({
+                  message: `Your internet connection appears to be offline`,
+                  duration: 2000,
+                  cssClass: 'toast-container'
+              }).present();
+          });
+          this.connected$ = this.network.onConnect().subscribe(data =>{
+            this.isOnline = true;
+            this.toastCtrl.create({
+              message: `You are back online`,
+              duration: 2000,
+              cssClass: "toast-container"
+          }).present();
+          })
+        }, 2000)
+      });
+    }
   }
 
 }

@@ -6,6 +6,7 @@ import { StatisticsProvider } from '../../providers/statistics/statistics';
 import { PipesModule } from '../../pipes/pipes.module';
 
 
+
 @NgModule({
   declarations: [
     StatisticsPage
@@ -15,6 +16,8 @@ import { PipesModule } from '../../pipes/pipes.module';
     ChartsModule,
     PipesModule
   ],
-  providers: [ StatisticsProvider ]
+  providers: [
+     StatisticsProvider
+    ]
 })
 export class StatisticsPageModule {}

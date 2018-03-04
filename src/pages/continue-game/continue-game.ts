@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, MenuController, Platform, ToastController, AlertController } from 'ionic-angular';
 import { DatabaseProvider } from '../../providers/database/database';
 import { Game } from '../../models/game.model';
-import { Hole } from '../../models/hole.model';
 import { GameMethods } from '../../superclasses/game-methods';
 import { ServerProvider } from '../../providers/server/server';
 import { Goal } from '../../models/goal.model';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
+import { Subscription } from 'rxjs';
+import { Network } from '@ionic-native/network';
 
 
 
@@ -18,15 +19,14 @@ import { LoadingController } from 'ionic-angular/components/loading/loading-cont
 export class ContinueGamePage extends GameMethods {
 
   games: Game[];
-  // holes: Hole[] = [];
-  // totalScore: number;
+  connected$: Subscription;
+  disconnected$: Subscription;
+  isOnline: boolean = true;
   game: Game;
-  
-
   isComplete: boolean = false;
 
 
-  constructor(public navCtrl: NavController, public menu: MenuController, public db: DatabaseProvider, private platform:Platform, public toastCtrl: ToastController, public alertCtrl :AlertController, public serverProvider: ServerProvider, public loadingCtrl:LoadingController) {
+  constructor(public navCtrl: NavController, public menu: MenuController, public db: DatabaseProvider, private platform:Platform, public toastCtrl: ToastController, public alertCtrl :AlertController, public serverProvider: ServerProvider, public loadingCtrl:LoadingController, private network:Network) {
     super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl)
     if(this.platform.is('android') || this.platform.is('ios')){
       this.db.getDatabaseState().subscribe(rdy => {
@@ -39,8 +39,14 @@ export class ContinueGamePage extends GameMethods {
 
 
    ionViewDidEnter() {
+     this.watchNetwork();
      this.refreshData();
    }  
+
+   ionViewWillLeave(){
+    (this.connected$ !== undefined) ? this.connected$.unsubscribe() : console.log("Left page");
+    (this.disconnected$ !== undefined) ? this.disconnected$.unsubscribe(): console.log("Left page")
+  }
 
 
    async resumeGame(){
@@ -70,14 +76,7 @@ export class ContinueGamePage extends GameMethods {
 
       this.isComplete = this.checkIfGameIsDone(this.holes);
 
-      if(this.isComplete){
-       if(this.game.postEmotions === null || undefined){
-         this.gamePostEmotions();
-       } else{
-          this.finishGameController();
-       }
-      
-      }
+      this.determine();
 
      } catch(e){
         this.toastCtrl.create({
@@ -96,7 +95,7 @@ export class ContinueGamePage extends GameMethods {
   gamePreEmotions(){
     this.alertCtrl.create({
       title: 'Pre-emotions',
-      subTitle: 'Would you like to add emotions before the game starts?',
+      subTitle: 'Would you like to add emotions before the game ends?',
       inputs: [
         {
           name: 'preEmotions',
@@ -123,17 +122,6 @@ export class ContinueGamePage extends GameMethods {
   }
 
 
-  // checkIfGameIsDone(holes: Hole[]): boolean{
-
-  //   for(let i =0; i < holes.length; i++){
-  //     if(holes[i].score == 0){
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // }
-
-
   finishGameController(){
     this.alertCtrl.create({
       title: 'Finish game',
@@ -152,6 +140,17 @@ export class ContinueGamePage extends GameMethods {
         }
       ]
     }).present();
+  }
+
+  determine(){
+    if(this.isComplete){
+      if(this.game.postEmotions === null || undefined){
+        this.gamePostEmotions();
+      } else{
+         this.finishGameController();
+      }
+     
+     }
   }
 
 
@@ -241,45 +240,50 @@ export class ContinueGamePage extends GameMethods {
 
  finishGame(){
 
-  // let loader = this.loadingCtrl.create({
-  //   content: `Please wait ...`,
-  //   showBackdrop: true
-  // })
-
-  // loader.present();
-
-  let goal: Goal = new Goal(this.game.name);
-  let goals: Goal[] = [goal];
-  let game: Game = new Game(
-    this.game.name,
-    this.game.preEmotions,
-    this.game.postEmotions,
-    this.totalScore,
-    this.holes,
-    goals);
-
-    this.sendToServer(game);
-
-    // this.serverProvider.finishGame(game).subscribe((data) =>{
-    //     this.toastCtrl.create({
-    //         message: "Successfully finished your game",
-    //         duration: 2000
-    //     }).present();
-
-    //     loader.dismiss();
-
-    //     this.navCtrl.push("ReviewPage",{game:game}).then(() => {
-    //       const index = this.navCtrl.getActive().index;
-    //       this.navCtrl.remove(0,index);
-    //     })   
-    // }, error =>{
-    //     this.toastCtrl.create({
-    //       message: `Oops! An error occured:  ${error}`,
-    //       duration: 3000
-    //   }).present();
-    //   loader.dismiss();
-    // })
+  if(this.isOnline){
+    let goal: Goal = new Goal(this.game.name);
+    let goals: Goal[] = [goal];
+    let game: Game = new Game(
+      this.game.name,
+      this.game.preEmotions,
+      this.game.postEmotions,
+      this.totalScore,
+      this.holes,
+      goals);
   
+      this.sendToServer(game);
+  } else{
+    this.toastCtrl.create({
+      message: `Cannot send data while offline`,
+      duration: 3000
+    }).present();
+  }
+
+  
+}
+
+watchNetwork(){
+
+  if(this.platform.is('android') || this.platform.is('ios')){
+    this.platform.ready().then(() => {
+      setTimeout(() => {
+          this.disconnected$ = this.network.onDisconnect().subscribe(() =>{
+            this.isOnline = false;
+            this.toastCtrl.create({
+                message: `You are offline`,
+                duration: 2000
+            }).present();
+        });
+        this.connected$ = this.network.onConnect().subscribe(data =>{
+          this.isOnline = true;
+          this.toastCtrl.create({
+            message: `You are online`,
+            duration: 2000
+        }).present();
+        })
+      }, 2000)
+    });
+  }
 }
 
 

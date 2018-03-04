@@ -1,8 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, LoadingController, Content, AlertController } from 'ionic-angular';
-import { Chart } from 'chart.js';
+import { IonicPage, LoadingController, Content, AlertController, ToastController } from 'ionic-angular';
 import { StatisticsProvider } from '../../providers/statistics/statistics';
 import { StatisticsDTO } from '../../models/statisticsDTO.model';
+import { Network } from '@ionic-native/network';
+import { Subscription } from 'rxjs';
+import { Platform } from 'ionic-angular/platform/platform';
 
 
 @IonicPage()
@@ -12,8 +14,14 @@ import { StatisticsDTO } from '../../models/statisticsDTO.model';
 })
 export class StatisticsPage {
 
+  connected$: Subscription;
+  disconnected$: Subscription;
+  timeperiod$: Subscription;
+  all$: Subscription;
 
   @ViewChild(Content) content: Content;
+
+   isOnline: boolean = true;
 
    ready = false;
    statistics: {  statistic: string, goal: string, value: number }[] = [];
@@ -27,7 +35,11 @@ export class StatisticsPage {
    weekSelected: boolean = false;
    twoWeekSelected: boolean = false;
 
-  constructor(public navCtrl: NavController, private statisticsProvider: StatisticsProvider, private loaderCtrl:LoadingController, private alertCtrl: AlertController) {
+  constructor(private statisticsProvider: StatisticsProvider, private loaderCtrl:LoadingController, private alertCtrl: AlertController, private network: Network, private toastCtrl: ToastController, private platform: Platform) {
+  }
+
+  ionViewDidEnter(){
+    this.watchNetwork();
   }
 
   ionViewDidLoad(){
@@ -35,13 +47,21 @@ export class StatisticsPage {
   }
 
   private fetchData(){
-    this.clearData();
-    this.ready = false;
-    if(this.fetchType ==='all'){
-      this.getAllData(); 
+    if(this.isOnline){
+      this.clearData();
+      this.ready = false;
+      if(this.fetchType ==='all'){
+        this.getAllData(); 
+      } else{
+        this.getTimePeriodData();
+      } 
     } else{
-      this.getTimePeriodData();
-    } 
+      this.toastCtrl.create({
+          message: `You are currently offline, unable to retrieve results`,
+          duration: 2000
+      }).present();
+    }
+   
    
   }
 
@@ -68,7 +88,7 @@ export class StatisticsPage {
     })
     loader.present();
     
-   this.statisticsProvider.getStatisticsPeriod(from,to).subscribe((data: StatisticsDTO) => {
+   this.timeperiod$ = this.statisticsProvider.getStatisticsPeriod(from,to).subscribe((data: StatisticsDTO) => {
       console.log(data);
 
       if(data.hasOwnProperty('totalGames')){
@@ -111,7 +131,7 @@ export class StatisticsPage {
       showBackdrop: true
     })
     loader.present();
-   this.statisticsProvider.getStatistics().subscribe((data: StatisticsDTO) => {
+   this.all$ = this.statisticsProvider.getStatistics().subscribe((data: StatisticsDTO) => {
       console.log(data);
 
       if(data.hasOwnProperty('totalGames')){
@@ -201,6 +221,57 @@ export class StatisticsPage {
     });
 
     alert.present();
+  }
+
+
+
+  ionViewWillLeave(){
+    (this.connected$ !== undefined) ? this.connected$.unsubscribe() : console.log("Left page");
+    (this.disconnected$ !== undefined) ? this.disconnected$.unsubscribe(): console.log("Left page");
+    (this.all$ !== undefined) ? this.all$.unsubscribe() : console.log("Left page");
+    (this.timeperiod$ !== undefined) ? this.timeperiod$.unsubscribe() : console.log("Left page");
+  }
+
+
+  watchNetwork(){
+    if(this.platform.is('android') || this.platform.is('ios')){
+      this.platform.ready().then(() => {
+        setTimeout(() => {
+            this.disconnected$ = this.network.onDisconnect().subscribe(() =>{
+              this.isOnline = false;
+              this.toastCtrl.create({
+                  message: `You are offline`,
+                  duration: 2000
+              }).present();
+          });
+          this.connected$ = this.network.onConnect().subscribe(data =>{
+            this.isOnline = true;
+            this.alertCtrl.create({
+              title: `Online`,
+              message: `You are back online, would like to retrieve results?`,
+              buttons: [
+                {
+                  text: `Yes`,
+                  handler: () => {
+                    this.fetchData();
+                  }
+                },
+                {
+                  text: `No`,
+                  handler: () => {
+                    this.toastCtrl.create({
+                      message: `Action Cancelled`,
+                      duration: 2000
+                    }).present();
+                  }
+
+                }
+              ]
+            }).present();
+          })
+        }, 2000)
+      });
+    }
   }
 
 
