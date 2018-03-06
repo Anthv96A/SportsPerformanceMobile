@@ -226,10 +226,20 @@ export class StatisticsPage {
 
 
   ionViewWillLeave(){
-    (this.connected$ !== undefined) ? this.connected$.unsubscribe() : console.log("Left page");
-    (this.disconnected$ !== undefined) ? this.disconnected$.unsubscribe(): console.log("Left page");
-    (this.all$ !== undefined) ? this.all$.unsubscribe() : console.log("Left page");
-    (this.timeperiod$ !== undefined) ? this.timeperiod$.unsubscribe() : console.log("Left page");
+    // Important to handle observables correctly when done with them
+    // Otherwise the application will get memory leaks.
+    if(this.connected$ !== undefined){
+        this.connected$.unsubscribe();
+    }
+    if(this.disconnected$ !== undefined){
+      this.disconnected$.unsubscribe();
+    }
+    if(this.all$ !== undefined){
+      this.all$.unsubscribe();
+    }
+    if(this.timeperiod$ !== undefined){
+      this.timeperiod$.unsubscribe();
+    }
   }
 
 

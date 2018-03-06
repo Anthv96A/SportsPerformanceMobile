@@ -318,6 +318,19 @@ export class PlayGamePage extends GameMethods {
     })
   }
 
+
+  ionViewWillLeave(){
+    if(this.connected$ !== undefined){
+      this.connected$.unsubscribe();
+    }
+    if(this.disconnected$ !== undefined){
+      this.disconnected$.unsubscribe();
+    }
+    if(this.subscription$ !== undefined){
+      this.subscription$.unsubscribe();
+    }
+  }
+
   finishGame(){
     let goal: Goal = new Goal(this.goal);
     let goals: Goal[] = [goal];

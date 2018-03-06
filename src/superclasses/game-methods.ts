@@ -2,9 +2,11 @@ import { MenuController, ToastController, LoadingController, NavController } fro
 import { Hole } from '../models/hole.model';
 import { Game } from '../models/game.model';
 import { ServerProvider } from '../providers/server/server';
+import { Subscription } from 'rxjs';
 
 export class GameMethods {
 
+    subscription$: Subscription
     background = { link: 'assets/imgs/ball.jpg' };
     header = { link: 'assets/imgs/course.jpg '}
     lastTotalScore: number = 0;

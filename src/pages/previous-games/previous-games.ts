@@ -136,9 +136,15 @@ export class PreviousGamesPage{
 
 
   ionViewWillLeave(){
-    (this.subscription$ !== undefined) ? this.subscription$.unsubscribe() : console.log("Component Destroyed");
-    (this.connected$ !== undefined) ? this.connected$.unsubscribe() : console.log("Left page");
-    (this.disconnected$ !== undefined) ? this.disconnected$.unsubscribe(): console.log("Left page");
+    if(this.connected$ !== undefined){
+      this.connected$.unsubscribe();
+    }
+    if(this.disconnected$ !== undefined){
+      this.disconnected$.unsubscribe();
+    }
+    if(this.subscription$ !== undefined){
+      this.subscription$.unsubscribe();
+    }
   }
 
   private initialiseDates(){
