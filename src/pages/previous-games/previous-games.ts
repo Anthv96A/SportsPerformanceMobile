@@ -72,8 +72,9 @@ export class PreviousGamesPage{
     this.subscription$ = this.serverProvider.getAllGamesWithinPeriod(this.fromDate, this.toDate).subscribe((data: Game[]) =>{
         this.games = data;
         this.called = true;
+        loader.dismiss();
       });
-    loader.dismiss();
+
   }
 
   moreInfo(){

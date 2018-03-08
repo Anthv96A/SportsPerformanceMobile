@@ -21,19 +21,11 @@ export class ServerProvider {
   finishGame(game:Game): Observable<any> {
     const body = JSON.stringify(game);
     const headers = new Headers({'Content-Type':'application/json'})
-    return this.http.post(`${this.url}/game/new`,body,{headers:headers}).map((res)=>{
-         return res.json();
-      }).catch((err)=>{
-          return Observable.throw(err);
-      })
+    return this.http.post(`${this.url}/game/new`,body,{headers:headers}).map(this.extractData).catch(this.extractError);
   }
 
   getLastGame(name:string): Observable<any> {
-    return this.http.get(`${this.url}/game/last/${name}`).map((response: Response) => {
-        return response.json();
-    }).catch((err) =>{ 
-        return Observable.throw(err);
-      })
+    return this.http.get(`${this.url}/game/last/${name}`).map(this.extractData).catch(this.extractError);
   }
 
   getAllGamesWithinPeriod(from:string, to:string): Observable<any>{
@@ -47,4 +39,10 @@ export class ServerProvider {
           return gamesTransformed;
       })
   }
+    private extractData = (response: Response) => {
+      return response.json();
+    }
+    private extractError = (error: Response) => {
+        return Observable.throw(error.json());
+    }
 }
