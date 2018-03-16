@@ -14,15 +14,17 @@ import { Network } from '@ionic-native/network';
 })
 export class PreviousGamesPage{
 
+  private alive: boolean = true;
+
   called: boolean = false; 
   preDefinedDates: boolean = false;
   isOnline: boolean = true;
   maximumDate: any;
 
   background = { link: 'assets/imgs/golf-home.jpg' };
-  subscription$: Subscription;
-  connected$: Subscription;
-  disconnected$: Subscription;
+  private subscription$: Subscription;
+  private connected$: Subscription;
+  private disconnected$: Subscription;
 
   fromDate: string;
   toDate: string;
@@ -46,8 +48,8 @@ export class PreviousGamesPage{
   }
 
   ionViewDidEnter(){
+    this.alive = true;
     this.watchNetwork();
-    console.log(this.isOnline);
   }
 
   search(){
@@ -69,7 +71,9 @@ export class PreviousGamesPage{
     loader.present();
     this.clearData();
    
-    this.subscription$ = this.serverProvider.getAllGamesWithinPeriod(this.fromDate, this.toDate).subscribe((data: Game[]) =>{
+    this.subscription$ = this.serverProvider.getAllGamesWithinPeriod(this.fromDate, this.toDate)
+    .takeWhile(() => this.alive)
+    .subscribe((data: Game[]) =>{
         this.games = data;
         this.called = true;
         loader.dismiss();
@@ -146,6 +150,8 @@ export class PreviousGamesPage{
     if(this.subscription$ !== undefined){
       this.subscription$.unsubscribe();
     }
+
+    this.alive = false;
   }
 
   private initialiseDates(){
@@ -179,7 +185,9 @@ export class PreviousGamesPage{
     if(this.platform.is('android') || this.platform.is('ios')){
       this.platform.ready().then(() => {
         setTimeout(() => {
-            this.disconnected$ = this.network.onDisconnect().subscribe(() =>{
+            this.disconnected$ = this.network.onDisconnect()
+            .takeWhile(() => this.alive)
+            .subscribe(() =>{
               this.isOnline = false;
               this.toastCtrl.create({
                   message: `Your internet connection appears to be offline`,
@@ -187,7 +195,9 @@ export class PreviousGamesPage{
                   cssClass: 'toast-container'
               }).present();
           });
-          this.connected$ = this.network.onConnect().subscribe(data =>{
+          this.connected$ = this.network.onConnect()
+          .takeWhile(() => this.alive)
+          .subscribe(data =>{
             this.isOnline = true;
             this.toastCtrl.create({
               message: `You are back online`,

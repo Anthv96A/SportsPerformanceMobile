@@ -27,18 +27,26 @@ export class ReviewPage {
   }
 
   showPreEmotions(){  
+      let emotion = 'None';
+      if(this.game.postEmotions !== undefined || this.game.postEmotions !== null){
+          emotion = this.game.postEmotions;
+      }
      let alert = this.alertCtrl.create({
         title: 'Pre-emotions',
-        subTitle: `Your pre-emotions ${this.game.preEmotions}`,
+        subTitle: `Your pre-emotions ${emotion}`,
         buttons: ['OK']
       });
      alert.present();
   }
 
   showPostEmotions(){
+    let emotion = 'None';
+    if(this.game.preEmotions !== undefined || this.game.preEmotions !== null){
+      emotion = this.game.postEmotions;
+    }
     let alert = this.alertCtrl.create({
       title: 'Post-emotions',
-      subTitle: `Your post-emotions ${this.game.postEmotions}`,
+      subTitle: `Your post-emotions ${emotion}`,
       buttons: ['OK']
     });
    alert.present();
@@ -115,6 +123,7 @@ export class ReviewPage {
 
             this.storage.set('played',stored);
             this.storage.remove('exists');
+            this.storage.remove('submitted')
 
             this.toastCtrl.create({
               message: "Game finished",

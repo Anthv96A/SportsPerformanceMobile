@@ -38,7 +38,6 @@ export class GamePage {
         } else{ 
             this.storage.remove('played')
         }
-        
       } 
     })
 

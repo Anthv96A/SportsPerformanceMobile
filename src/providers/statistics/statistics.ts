@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/Rx';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
 import { Response } from '@angular/http/src/static_response';
 import { URLS } from '../../assets/server.link';
 import { StatisticsDTO } from '../../models/statisticsDTO.model';

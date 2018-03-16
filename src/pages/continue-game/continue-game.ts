@@ -8,7 +8,7 @@ import { Goal } from '../../models/goal.model';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { Subscription } from 'rxjs';
 import { Network } from '@ionic-native/network';
-
+import { Storage } from '@ionic/storage/dist/storage';
 
 
 @IonicPage()
@@ -26,8 +26,19 @@ export class ContinueGamePage extends GameMethods {
   isComplete: boolean = false;
 
 
-  constructor(public navCtrl: NavController, public menu: MenuController, public db: DatabaseProvider, private platform:Platform, public toastCtrl: ToastController, public alertCtrl :AlertController, public serverProvider: ServerProvider, public loadingCtrl:LoadingController, private network:Network) {
-    super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl)
+
+  constructor(
+    public navCtrl: NavController,
+    public menu: MenuController,
+    public db: DatabaseProvider,
+    private platform:Platform,
+    public toastCtrl: ToastController,
+    public alertCtrl :AlertController,
+    public serverProvider: ServerProvider,
+    public loadingCtrl:LoadingController,
+    private network:Network,
+    public storage: Storage) {
+    super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl,storage)
     if(this.platform.is('android') || this.platform.is('ios')){
       this.db.getDatabaseState().subscribe(rdy => {
         if (rdy) {
@@ -39,8 +50,10 @@ export class ContinueGamePage extends GameMethods {
 
 
    ionViewDidEnter() {
-     this.watchNetwork();
-     this.refreshData();
+    this.watchNetwork();
+     if(!this.isComplete){
+      this.refreshData();
+     }
    }  
 
    ionViewWillLeave(){
@@ -50,9 +63,25 @@ export class ContinueGamePage extends GameMethods {
 
 
    async resumeGame(){
+
      try{
+
       this.games = await this.db.selectFromGame();
-      this.refreshData();
+      this.storage.get('submitted').then((submitted) => {
+
+        if(submitted){
+          this.isComplete = true;
+          this.navCtrl.push("ReviewPage",{game: this.games[0]}).then(() => {
+            const index = this.navCtrl.getActive().index;
+            this.navCtrl.remove(0,index);
+          })  
+        } 
+        else {
+          this.refreshData();
+        }
+
+      }) 
+   
      } catch(e){
         this.toastCtrl.create({
           message:`Oops! An error occured! ${e}`,
@@ -155,16 +184,16 @@ export class ContinueGamePage extends GameMethods {
 
 
   viewPreEmotions(){
-
-    if( this.game.preEmotions === undefined || this.game.preEmotions === null){
-      this.game.preEmotions = 'None'
+    let emotion = 'None';
+    if(this.game.preEmotions !== undefined || this.game.preEmotions !== null){
+      emotion = this.game.preEmotions;
     }
 
     let alert = this.alertCtrl.create({
       title: 'Pre-emotions',
       message: `
       <p style="text-align:center">
-       ${this.game.preEmotions}
+       ${emotion}
       </p>
 
        `,
@@ -174,15 +203,16 @@ export class ContinueGamePage extends GameMethods {
   }
 
   viewPostEmotions(){
-    if(this.game.postEmotions === undefined || this.game.preEmotions === null){
-      this.game.postEmotions = 'None'
+    let emotion = 'None';
+    if(this.game.postEmotions !== undefined || this.game.postEmotions !== null){
+      emotion = this.game.postEmotions;
     }
 
     let alert = this.alertCtrl.create({
       title: 'Pre-emotions',
       message: `
       <p style="text-align:center">
-       ${this.game.postEmotions}
+       ${emotion}
       </p>
 
        `,

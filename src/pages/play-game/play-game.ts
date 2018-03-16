@@ -44,11 +44,11 @@ export class PlayGamePage extends GameMethods {
     private platform: Platform, 
     private alertCtrl :AlertController,
     public serverProvider: ServerProvider,
-    private storage: Storage,
+    public storage: Storage,
     public loadingCtrl: LoadingController,
     private network: Network) {
 
-    super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl)
+    super(menu,serverProvider,toastCtrl,loadingCtrl,navCtrl,storage)
     this.goal = this.navParams.get('selected');
 
     let loader = this.loadingCtrl.create({
@@ -89,7 +89,6 @@ export class PlayGamePage extends GameMethods {
       if(this.isGameDone){
         this.gamePostEmotions();
       }
-      
     })
     
   }
@@ -100,10 +99,8 @@ export class PlayGamePage extends GameMethods {
       this.holes = data;
       this.totalScore = this.getTotalScore(this.holes);
   
-
       if(!this.exists){
         this.db.createGameTable().then(res => {
-
           this.db.insertGoalName(this.goal).then((data) => {
             this.toastCtrl.create({
               message: `Game Successfully created`,
@@ -123,8 +120,6 @@ export class PlayGamePage extends GameMethods {
                   duration: PlayGamePage.DURATION
                 }).present();
               })
-          
-
           }).catch((err) => {
             this.toastCtrl.create({
               message: `An error occurred ${err}`,
@@ -147,11 +142,17 @@ export class PlayGamePage extends GameMethods {
   }
 
   viewPreEmotions(){
+    let emotion = 'None';
+
+    if(this.preEmotions !== undefined){
+      emotion = this.preEmotions;
+    }
+
     let alert = this.alertCtrl.create({
       title: 'Pre-emotions',
       message: `
       <p style="text-align:center">
-       ${this.preEmotions}
+       ${emotion}
       </p>
 
        `,
@@ -161,17 +162,17 @@ export class PlayGamePage extends GameMethods {
   }
 
   viewPostEmotions(){
-    if(this.postEmotions === undefined){
-      this.postEmotions = 'None'
+    let emotion = 'None';
+    if(this.postEmotions !== undefined){
+      emotion = this.postEmotions;
     }
 
     let alert = this.alertCtrl.create({
       title: 'Pre-emotions',
       message: `
       <p style="text-align:center">
-       ${this.postEmotions}
+       ${emotion}
       </p>
-
        `,
       buttons: ['OK']
     });
@@ -200,11 +201,9 @@ export class PlayGamePage extends GameMethods {
         }, {
           text: 'Add',
           handler: data => {
-
             if(data){
               this.preEmotions = data.preEmotions;
             }
-           
             this.updateEmotions();
           }
         }
@@ -234,7 +233,6 @@ export class PlayGamePage extends GameMethods {
         }, {
           text: 'Add',
           handler: data =>{
-
             if(data){
               this.postEmotions = data.postEmotions;
             } 
@@ -345,7 +343,6 @@ export class PlayGamePage extends GameMethods {
   }
 
   watchNetwork(){
-
     if(this.platform.is(PlayGameEnum.ANDROID) || this.platform.is(PlayGameEnum.IOS)){
       this.platform.ready().then(() => {
         setTimeout(() => {
@@ -382,12 +379,10 @@ export class PlayGamePage extends GameMethods {
                         duration: PlayGamePage.DURATION
                       }).present();
                     }
-  
                   }
                 ]
               }).present();
             }
-            
           })
         }, PlayGamePage.DURATION
       )

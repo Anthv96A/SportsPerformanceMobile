@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Game } from '../../models/game.model';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/Rx';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
 import { URLS } from '../../assets/server.link';
 import { Response } from '@angular/http/src/static_response';
 
@@ -37,7 +38,7 @@ export class ServerProvider {
           }
           this.games = gamesTransformed;
           return gamesTransformed;
-      })
+      }).catch(this.extractError);
   }
     private extractData = (response: Response) => {
       return response.json();

@@ -3,6 +3,7 @@ import { Hole } from '../models/hole.model';
 import { Game } from '../models/game.model';
 import { ServerProvider } from '../providers/server/server';
 import { Subscription } from 'rxjs';
+import { Storage } from '@ionic/storage';
 
 export class GameMethods {
 
@@ -12,7 +13,13 @@ export class GameMethods {
     lastTotalScore: number = 0;
     totalScore:number;
     holes: Hole[] = [];
-    constructor(public menu: MenuController,public serverProvider:ServerProvider, public toastCtrl: ToastController, public loadingCtrl: LoadingController, public navCtrl: NavController){}
+    constructor(
+      public menu: MenuController,
+      public serverProvider:ServerProvider,
+      public toastCtrl: ToastController,
+      public loadingCtrl: LoadingController,
+      public navCtrl: NavController,
+      public storage: Storage){}
 
     public toogleMenu() {
         this.menu.toggle();
@@ -53,6 +60,8 @@ export class GameMethods {
               }).present();
 
               loader.dismiss();
+
+              this.storage.set('submitted',true);
 
               this.navCtrl.push("ReviewPage",{game:game}).then(() => {
                 const index = this.navCtrl.getActive().index;

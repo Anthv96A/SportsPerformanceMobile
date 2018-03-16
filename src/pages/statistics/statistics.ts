@@ -3,7 +3,7 @@ import { IonicPage, LoadingController, Content, AlertController, ToastController
 import { StatisticsProvider } from '../../providers/statistics/statistics';
 import { StatisticsDTO } from '../../models/statisticsDTO.model';
 import { Network } from '@ionic-native/network';
-import { Subscription } from 'rxjs';
+import { Subscription } from 'rxjs/Subscription';
 import { Platform } from 'ionic-angular/platform/platform';
 
 
@@ -14,10 +14,12 @@ import { Platform } from 'ionic-angular/platform/platform';
 })
 export class StatisticsPage {
 
-  connected$: Subscription;
-  disconnected$: Subscription;
-  timeperiod$: Subscription;
-  all$: Subscription;
+  private alive: boolean = true;
+
+  private connected$: Subscription = undefined;
+  private disconnected$: Subscription = undefined;
+  private timeperiod$: Subscription = undefined;
+  private all$: Subscription = undefined;
 
   @ViewChild(Content) content: Content;
 
@@ -35,10 +37,25 @@ export class StatisticsPage {
    weekSelected: boolean = false;
    twoWeekSelected: boolean = false;
 
-  constructor(private statisticsProvider: StatisticsProvider, private loaderCtrl:LoadingController, private alertCtrl: AlertController, private network: Network, private toastCtrl: ToastController, private platform: Platform) {
-  }
+  constructor(
+    private statisticsProvider: StatisticsProvider,
+    private loaderCtrl:LoadingController,
+    private alertCtrl: AlertController,
+    private network: Network,
+    private toastCtrl: ToastController,
+    private platform: Platform){}
 
   ionViewDidEnter(){
+    this.alive = true;
+    if(this.connected$ !== undefined){
+      this.connected$.unsubscribe();
+      this.connected$ = undefined;
+    }
+    if(this.disconnected$ !== undefined){
+      this.disconnected$.unsubscribe();
+      this.disconnected$ = undefined;
+      }
+    
     this.watchNetwork();
   }
 
@@ -61,8 +78,6 @@ export class StatisticsPage {
           duration: 2000
       }).present();
     }
-   
-   
   }
 
   private getTimePeriodData(){
@@ -88,33 +103,15 @@ export class StatisticsPage {
     })
     loader.present();
     
-   this.timeperiod$ = this.statisticsProvider.getStatisticsPeriod(from,to).subscribe((data: StatisticsDTO) => {
-      console.log(data);
-
-      if(data.hasOwnProperty('totalGames')){
-        this.statistics.push({statistic: 'Total Games Played', goal:'Number Of Games', value: data.totalGames})
-      }
-      for(let key in data){
-        for(let prop in data[key]){
-          if(key !== 'goalsAndGameCount'){
-            this.statistics.push({statistic: key, goal:prop, value: data[key][prop]});
-          } else{
-             // 'prop' is the goal from the server
-              this.doughnutChartLabels.push(prop);
-              this.doughnutChartData.push(data[key][prop])
-          } 
-        }
-      }
-      this.ready = true;
-
+   this.timeperiod$ = this.statisticsProvider.getStatisticsPeriod(from,to)
+   .takeWhile(() => this.alive)
+   .subscribe((data: StatisticsDTO) => {
+      this.populate(data);
       loader.dismiss();
-
       setTimeout(() =>{
         this.content.resize()
       },300)
-      
     })
-
   }
 
   private clearData(){
@@ -123,39 +120,21 @@ export class StatisticsPage {
     this.doughnutChartData = [];
   }
 
-
   private getAllData(){
-
     let loader = this.loaderCtrl.create({
       content: `Loading Statistics`,
       showBackdrop: true
     })
     loader.present();
-   this.all$ = this.statisticsProvider.getStatistics().subscribe((data: StatisticsDTO) => {
-      console.log(data);
-
-      if(data.hasOwnProperty('totalGames')){
-        this.statistics.push({statistic: 'Total Games Played', goal:'Number Of Games', value: data.totalGames})
-      }
-      for(let key in data){
-        for(let prop in data[key]){
-          if(key !== 'goalsAndGameCount'){
-            this.statistics.push({statistic: key, goal:prop, value: data[key][prop]});
-          } else{
-             // 'prop' is the goal from the server
-              this.doughnutChartLabels.push(prop);
-              this.doughnutChartData.push(data[key][prop])
-          } 
-        }
-      }
-      this.ready = true;
-
+   this.all$ = this.statisticsProvider.getStatistics()
+   .takeWhile(() => this.alive)
+   .subscribe((data: StatisticsDTO) => {
+      this.populate(data);
       loader.dismiss();
-
       setTimeout(() =>{
         this.content.resize()
       },300)
-      
+    
     })
   }
 
@@ -168,7 +147,28 @@ export class StatisticsPage {
     console.log(e);
   }
 
-  options(){
+
+  private populate(data: StatisticsDTO): void{
+
+    if(data.hasOwnProperty('totalGames')){
+      this.statistics.push({statistic: 'Total Games Played', goal:'Number Of Games', value: data.totalGames})
+    }
+    for(let key in data){
+      for(let prop in data[key]){
+        if(key !== 'goalsAndGameCount'){
+          this.statistics.push({statistic: key, goal:prop, value: data[key][prop]});
+        } else{
+           // 'prop' is the goal from the server
+            this.doughnutChartLabels.push(prop);
+            this.doughnutChartData.push(data[key][prop])
+        } 
+      }
+    }
+    this.ready = true;
+
+  }
+
+  options(): void{
     let alert = this.alertCtrl.create();
     alert.setTitle('Date Range');
 
@@ -228,18 +228,26 @@ export class StatisticsPage {
   ionViewWillLeave(){
     // Important to handle observables correctly when done with them
     // Otherwise the application will get memory leaks.
+     console.log( 'view will leave' );
+     console.log(`Before ${this.connected$}`);
     if(this.connected$ !== undefined){
         this.connected$.unsubscribe();
+        this.connected$ = undefined;
     }
     if(this.disconnected$ !== undefined){
       this.disconnected$.unsubscribe();
+      this.disconnected$ = undefined;
     }
     if(this.all$ !== undefined){
       this.all$.unsubscribe();
+      this.all$ = undefined;
     }
     if(this.timeperiod$ !== undefined){
       this.timeperiod$.unsubscribe();
+      this.timeperiod$ = undefined;
     }
+    this.alive = false;
+    console.log(`After ${this.connected$}`);
   }
 
 
@@ -247,14 +255,18 @@ export class StatisticsPage {
     if(this.platform.is('android') || this.platform.is('ios')){
       this.platform.ready().then(() => {
         setTimeout(() => {
-            this.disconnected$ = this.network.onDisconnect().subscribe(() =>{
+            this.disconnected$ = this.network.onDisconnect()
+            .takeWhile(() => this.alive)
+            .subscribe(() =>{
               this.isOnline = false;
               this.toastCtrl.create({
                   message: `You are offline`,
                   duration: 2000
               }).present();
           });
-          this.connected$ = this.network.onConnect().subscribe(data =>{
+          this.connected$ = this.network.onConnect()
+           .takeWhile(() => this.alive)
+          .subscribe(data =>{
             this.isOnline = true;
             this.alertCtrl.create({
               title: `Online`,
