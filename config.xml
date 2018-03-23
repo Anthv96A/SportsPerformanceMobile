@@ -88,4 +88,5 @@
     <plugin name="cordova-sqlite-storage" spec="^2.2.0" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
     <plugin name="uk.co.workingedge.cordova.plugin.sqliteporter" spec="^1.0.2" />
+    <allow-navigation href="http://192.168.1.4:8100" />
 </widget>

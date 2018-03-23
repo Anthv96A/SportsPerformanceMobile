@@ -97,19 +97,12 @@ export class ReviewPage {
 
 
   ionViewCanLeave() : boolean | Promise<void> {
-
     if(this.finished){
       return true;
     } else {
       return false;
     }
-
-
   }
-
-
-
-
 
  async finish() {
        try{
@@ -129,17 +122,13 @@ export class ReviewPage {
               message: "Game finished",
               duration: 2000
             }).present();
-        
-
+           this.navCtrl.setRoot('TabsPage');
         } catch(e){
             this.toastCtrl.create({
               message: `An error occurred ${e}`,
               duration: 3000
             }).present();
         }
-    this.navCtrl.setRoot('TabsPage');
   }
-
- 
 
 }

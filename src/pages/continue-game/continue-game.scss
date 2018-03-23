@@ -9,6 +9,17 @@ page-continue-game {
         background-size: cover;
     }
 
+    ion-scroll{
+        height: 100px;
+        position: relative;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    
+        margin: auto;
+    }
+
 
     .list-item{
         opacity: 0.7;

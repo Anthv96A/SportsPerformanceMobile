@@ -64,7 +64,7 @@
               Please select the next hole
           </div>
 
-             <ion-scroll scrollX="true" style="width:100%;">
+             <ion-scroll scrollX="true" style="width:100%; height:200px;">
               <div class="inner">
                 <ion-card *ngFor="let hole of holes" (click)="selectHole(hole.holeNumber, hole.score)" [ngClass]= "{'answered': hole.score > 0 }"> 
                     <div *ngIf="hole.score == 0; else rated">
@@ -75,6 +75,7 @@
                          <p class="centred">
                            
                               Score {{hole.score}}
+                              <br>
                               Hole {{hole.holeNumber}}
       
                          </p>

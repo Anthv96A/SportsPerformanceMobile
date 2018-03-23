@@ -88,8 +88,8 @@ page-play-game {
 
 
     ion-scroll{
-        height: 200px;
-        position: absolute;
+        height: 100px;
+        position: relative;
         top:0;
         bottom: 0;
         left: 0;
@@ -132,36 +132,37 @@ page-play-game {
         color: white;
         font-size: 30px;
         text-align: center;
-        //margin-bottom: 20px;
+        margin-bottom: 20px;
     }
 
 
-        .inner {
-            width: 2000px;
-          //  height: 100%;
-            height: 150px;
-            margin-top: 30px;
-          ion-card{
-             display: table-cell;
-             width: 400px;
-             height: 150px;
-          //    height: 100%;
-             border: 1px solid black;
-             border-spacing: 100px;
-             padding: 5px;
-             text-align: center;
-          }
-    
-          .centred {
-          //  margin: 0 auto;
-            text-align: center;
-          // margin-top: 10px;
-            color: white;
-        }
-    
-          .answered{
-            background-color: rgba(0, 0, 0, 0.6);
-        }
+    .inner {
+        width: 2000px;
+      //  height: 100%;
+        height: 150px;
+        margin-top: 30px;
+      ion-card{
+         display: table-cell;
+         width: 400px;
+         height: 150px;
+      //    height: 100%;
+         border: 1px solid black;
+         border-spacing: 100px;
+         padding: 5px;
+         text-align: center;
+      }
+
+      .centred {
+        margin: 0 auto;
+        text-align: center;
+        margin-top: 30px;
+        color: white
+    }
+
+      .answered{
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
 
     }
 

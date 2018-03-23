@@ -5,7 +5,8 @@ import { StatisticsDTO } from '../../models/statisticsDTO.model';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
 import { Platform } from 'ionic-angular/platform/platform';
-
+import { Storage } from '@ionic/storage';
+import { StatisticsEnum } from './statistics.enum';
 
 @IonicPage()
 @Component({
@@ -21,21 +22,22 @@ export class StatisticsPage {
   private timeperiod$: Subscription = undefined;
   private all$: Subscription = undefined;
 
-  @ViewChild(Content) content: Content;
+   @ViewChild(Content) 
+   content: Content;
 
    isOnline: boolean = true;
 
-   ready = false;
+   ready: boolean = false;
    statistics: {  statistic: string, goal: string, value: number }[] = [];
    doughnutChartLabels:string[] = [];
    doughnutChartData:number[] = [];
-   doughnutChartType:string = 'doughnut';
+   doughnutChartType:string = StatisticsEnum.CHART_TYPE;
 
-   fetchType = 'all'
+   fetchType: string = null;
 
-   allSelected: boolean = true;
-   weekSelected: boolean = false;
-   twoWeekSelected: boolean = false;
+   allSelected: boolean;
+   weekSelected: boolean;
+   twoWeekSelected: boolean;
 
   constructor(
     private statisticsProvider: StatisticsProvider,
@@ -43,7 +45,8 @@ export class StatisticsPage {
     private alertCtrl: AlertController,
     private network: Network,
     private toastCtrl: ToastController,
-    private platform: Platform){}
+    private platform: Platform,
+    private storage: Storage){}
 
   ionViewDidEnter(){
     this.alive = true;
@@ -60,21 +63,42 @@ export class StatisticsPage {
   }
 
   ionViewDidLoad(){
-    this.fetchData();
+    this.storage.get(StatisticsEnum.RANGE).then((val: string) => {
+      if(val){
+        this.fetchType = val;
+
+        switch(this.fetchType){
+           case StatisticsEnum.FETCH_ALL:
+              this.allSelected = true;
+            break;
+           case StatisticsEnum.FETCH_LAST_WEEK:
+              this.weekSelected = true;
+            break;
+           case StatisticsEnum.FETCH_TWO_WEEKS:
+              this.twoWeekSelected = true;
+            break;
+        }
+
+      } else{
+        this.allSelected = true;
+        this.fetchType = StatisticsEnum.FETCH_ALL;
+      }
+      this.fetchData();
+    }).catch((err) => console.log(err));
   }
 
   private fetchData(){
     if(this.isOnline){
       this.clearData();
       this.ready = false;
-      if(this.fetchType ==='all'){
+      if(this.fetchType === StatisticsEnum.FETCH_ALL){
         this.getAllData(); 
       } else{
         this.getTimePeriodData();
       } 
     } else{
       this.toastCtrl.create({
-          message: `You are currently offline, unable to retrieve results`,
+          message: StatisticsEnum.MESSAGE_OFFLINE,
           duration: 2000
       }).present();
     }
@@ -86,9 +110,9 @@ export class StatisticsPage {
     let fromDate = new Date()
     let toDate = new Date()
 
-    if(this.fetchType ==='last week'){
+    if(this.fetchType === StatisticsEnum.FETCH_LAST_WEEK){
         fromDate.setDate(data.getDate() - 7);
-    } else if(this.fetchType ==='two weeks'){
+    } else if(this.fetchType === StatisticsEnum.FETCH_TWO_WEEKS){
         fromDate.setDate(data.getDate() - 14);
     }
 
@@ -98,7 +122,7 @@ export class StatisticsPage {
     let to: string = toDate.toISOString();
 
     let loader = this.loaderCtrl.create({
-      content: `Loading Statistics`,
+      content: StatisticsEnum.LOADER_CONTENT,
       showBackdrop: true
     })
     loader.present();
@@ -122,7 +146,7 @@ export class StatisticsPage {
 
   private getAllData(){
     let loader = this.loaderCtrl.create({
-      content: `Loading Statistics`,
+      content:  StatisticsEnum.LOADER_CONTENT,
       showBackdrop: true
     })
     loader.present();
@@ -138,7 +162,6 @@ export class StatisticsPage {
     })
   }
 
-
   public chartClicked(e:any):void {
     console.log(e);
   }
@@ -150,12 +173,12 @@ export class StatisticsPage {
 
   private populate(data: StatisticsDTO): void{
 
-    if(data.hasOwnProperty('totalGames')){
-      this.statistics.push({statistic: 'Total Games Played', goal:'Number Of Games', value: data.totalGames})
+    if(data.hasOwnProperty(StatisticsEnum.DATA_TOTAL_GAMES)){
+      this.statistics.push({statistic: StatisticsEnum.DATA_STATISTIC, goal: StatisticsEnum.DATA_GOAL, value: data.totalGames})
     }
     for(let key in data){
       for(let prop in data[key]){
-        if(key !== 'goalsAndGameCount'){
+        if(key !== StatisticsEnum.DATA_GOALS_AND_GAMES_COUNT){
           this.statistics.push({statistic: key, goal:prop, value: data[key][prop]});
         } else{
            // 'prop' is the goal from the server
@@ -170,49 +193,53 @@ export class StatisticsPage {
 
   options(): void{
     let alert = this.alertCtrl.create();
-    alert.setTitle('Date Range');
+    alert.setTitle(StatisticsEnum.ALERT_TITLE);
 
     alert.addInput({
-      type: 'radio',
-      label: 'Show All',
+      type: StatisticsEnum.ALERT_TYPE,
+      label: StatisticsEnum.LABEL_ALL,
       checked: this.allSelected,
-      value: 'all'
+      value: StatisticsEnum.FETCH_ALL
     });
 
     alert.addInput({
-      type: 'radio',
-      label: 'Last Week',
+      type: StatisticsEnum.ALERT_TYPE,
+      label: StatisticsEnum.LABEL_LAST_WEEK,
       checked: this.weekSelected,
-      value: 'last week'
+      value: StatisticsEnum.FETCH_LAST_WEEK
     });
 
     alert.addInput({
-      type: 'radio',
-      label: 'Last Two Weeks',
+      type: StatisticsEnum.ALERT_TYPE,
+      label: StatisticsEnum.LABEL_TWO_WEEKS,
       checked: this.twoWeekSelected,
-      value: 'two weeks'
+      value: StatisticsEnum.FETCH_TWO_WEEKS
     });
 
 
-    alert.addButton('Cancel');
+    alert.addButton(StatisticsEnum.ALERT_CANCEL);
     alert.addButton({
-      text: 'Ok',
+      text: StatisticsEnum.ALERT_OK,
       handler: (data: any) => {
-          if(data === 'all'){
-              this.fetchType = 'all';
+          if(data === StatisticsEnum.FETCH_ALL){
+              this.fetchType = StatisticsEnum.FETCH_ALL;
               this.allSelected = true;
               this.weekSelected = false;
               this.twoWeekSelected = false;
-          } else if(data === 'last week'){
-              this.fetchType = 'last week';
+              this.storage.set(StatisticsEnum.RANGE,StatisticsEnum.FETCH_ALL);
+
+          } else if(data === StatisticsEnum.FETCH_LAST_WEEK){
+              this.fetchType = StatisticsEnum.FETCH_LAST_WEEK;
               this.allSelected = false;
               this.weekSelected = true;
               this.twoWeekSelected = false;
+              this.storage.set(StatisticsEnum.RANGE, StatisticsEnum.FETCH_LAST_WEEK);
           } else{
-              this.fetchType = 'two weeks';
+              this.fetchType = StatisticsEnum.FETCH_TWO_WEEKS;
               this.allSelected = false;
               this.weekSelected = false;
               this.twoWeekSelected = true;
+              this.storage.set(StatisticsEnum.RANGE, StatisticsEnum.FETCH_TWO_WEEKS);
           }
 
           this.fetchData();
@@ -228,8 +255,6 @@ export class StatisticsPage {
   ionViewWillLeave(){
     // Important to handle observables correctly when done with them
     // Otherwise the application will get memory leaks.
-     console.log( 'view will leave' );
-     console.log(`Before ${this.connected$}`);
     if(this.connected$ !== undefined){
         this.connected$.unsubscribe();
         this.connected$ = undefined;
@@ -247,12 +272,11 @@ export class StatisticsPage {
       this.timeperiod$ = undefined;
     }
     this.alive = false;
-    console.log(`After ${this.connected$}`);
   }
 
 
   watchNetwork(){
-    if(this.platform.is('android') || this.platform.is('ios')){
+    if(this.platform.is(StatisticsEnum.PLATFORM_ANDROID) || this.platform.is(StatisticsEnum.PLATFORM_IOS) || this.platform.is(StatisticsEnum.PLATFORM_WINDOWS)){
       this.platform.ready().then(() => {
         setTimeout(() => {
             this.disconnected$ = this.network.onDisconnect()
@@ -260,7 +284,7 @@ export class StatisticsPage {
             .subscribe(() =>{
               this.isOnline = false;
               this.toastCtrl.create({
-                  message: `You are offline`,
+                  message: StatisticsEnum.MESSAGE_OFFLINE,
                   duration: 2000
               }).present();
           });
@@ -269,24 +293,23 @@ export class StatisticsPage {
           .subscribe(data =>{
             this.isOnline = true;
             this.alertCtrl.create({
-              title: `Online`,
-              message: `You are back online, would like to retrieve results?`,
+              title: StatisticsEnum.ALERT_ONLINE,
+              message: StatisticsEnum.MESSAGE_ONLINE,
               buttons: [
                 {
-                  text: `Yes`,
+                  text: StatisticsEnum.ALERT_YES,
                   handler: () => {
                     this.fetchData();
                   }
                 },
                 {
-                  text: `No`,
+                  text:  StatisticsEnum.ALERT_NO,
                   handler: () => {
                     this.toastCtrl.create({
-                      message: `Action Cancelled`,
+                      message: StatisticsEnum.ALERT_ACTION_CANCELLED,
                       duration: 2000
                     }).present();
                   }
-
                 }
               ]
             }).present();

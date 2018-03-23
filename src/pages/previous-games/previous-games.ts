@@ -4,7 +4,8 @@ import { Game } from '../../models/game.model';
 import { ServerProvider } from '../../providers/server/server';
 import { Subscription } from 'rxjs';
 import { Network } from '@ionic-native/network';
-
+import { Storage } from '@ionic/storage';
+import { PreviousGamesEnum } from './previous-games.enum';
 
 
 @IonicPage()
@@ -21,7 +22,7 @@ export class PreviousGamesPage{
   isOnline: boolean = true;
   maximumDate: any;
 
-  background = { link: 'assets/imgs/golf-home.jpg' };
+  background = { link: PreviousGamesEnum.LINK };
   private subscription$: Subscription;
   private connected$: Subscription;
   private disconnected$: Subscription;
@@ -38,13 +39,22 @@ export class PreviousGamesPage{
     public alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private network: Network,
-    private platform: Platform) {}
+    private platform: Platform,
+    private storage: Storage) {}
   
   ionViewDidLoad() {
     let obj =  this.initialiseDates();
     this.fromDate = obj.from;
     this.toDate = obj.to;
     this.maximumDate = new Date().toISOString();
+
+    this.storage.get(PreviousGamesEnum.SHARED_PREFERENCE).then((exists: boolean) => {
+        if(exists){
+            exists ? (this.preDefinedDates = true) : ( this.preDefinedDates = false);
+        } else {
+           this.preDefinedDates = false;
+        }
+    })
   }
 
   ionViewDidEnter(){
@@ -52,20 +62,24 @@ export class PreviousGamesPage{
     this.watchNetwork();
   }
 
+  setPreference($event: boolean){
+    $event ? this.storage.set(PreviousGamesEnum.SHARED_PREFERENCE, true) : this.storage.set(PreviousGamesEnum.SHARED_PREFERENCE, false);
+  }
+
   search(){
 
     if(!this.isOnline){
       this.toastCtrl.create({
-          message: `Unable to fetch results offline, please try again later.`,
+          message: PreviousGamesEnum.OFFLINE_MESSAGE,
           showCloseButton: true,
-          closeButtonText: 'Ok',
-          cssClass: "toast-container"
+          closeButtonText: PreviousGamesEnum.TOAST_OKAY,
+          cssClass: PreviousGamesEnum.TOAST_CSS
       }).present();
       return;
     }
 
     let loader = this.loaderCtrl.create({
-      content: `Loading Data`,
+      content: PreviousGamesEnum.LOADER_CONTENT,
       showBackdrop: true
     });
     loader.present();
@@ -83,7 +97,7 @@ export class PreviousGamesPage{
 
   moreInfo(){
     let alert = this.alertCtrl.create({
-      title: 'Selecting Date Range',
+      title: PreviousGamesEnum.ALERT_TITLE,
       message: `
       <p style="text-align:center">
         You have the ability to query any date you like!
@@ -95,14 +109,14 @@ export class PreviousGamesPage{
       </p>
 
        `,
-      buttons: ['OK']
+      buttons: [PreviousGamesEnum.ALERT_OKAY]
     });
     alert.present();
   }  
 
 
   selectGame(game: Game){
-    this.navCtrl.push('PreviousGameDetailPage', {game: game});
+    this.navCtrl.push(PreviousGamesEnum.PREVIOUS_GAME_DETAIL_PAGE, {game: game});
   }
 
   oneWeekSearch(){
@@ -182,7 +196,7 @@ export class PreviousGamesPage{
 
   watchNetwork(){
 
-    if(this.platform.is('android') || this.platform.is('ios')){
+    if(this.platform.is(PreviousGamesEnum.PLATFORM_ANDROID) || this.platform.is(PreviousGamesEnum.PLATFORM_IOS) || this.platform.is(PreviousGamesEnum.PLATFORM_WINDOWS)){
       this.platform.ready().then(() => {
         setTimeout(() => {
             this.disconnected$ = this.network.onDisconnect()
@@ -190,9 +204,9 @@ export class PreviousGamesPage{
             .subscribe(() =>{
               this.isOnline = false;
               this.toastCtrl.create({
-                  message: `Your internet connection appears to be offline`,
+                  message: PreviousGamesEnum.OFFLINE_MESSAGE,
                   duration: 2000,
-                  cssClass: 'toast-container'
+                  cssClass: PreviousGamesEnum.TOAST_CSS
               }).present();
           });
           this.connected$ = this.network.onConnect()
@@ -200,9 +214,9 @@ export class PreviousGamesPage{
           .subscribe(data =>{
             this.isOnline = true;
             this.toastCtrl.create({
-              message: `You are back online`,
+              message: PreviousGamesEnum.ONLINE_MESSAGE,
               duration: 2000,
-              cssClass: "toast-container"
+              cssClass: PreviousGamesEnum.TOAST_CSS
           }).present();
           })
         }, 2000)

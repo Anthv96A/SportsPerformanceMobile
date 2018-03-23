@@ -1,7 +1,7 @@
 
 <ion-header>
   <ion-navbar>
-    <ion-title>View previous games</ion-title>
+    <ion-title>View Previous Games</ion-title>
     <ion-buttons end>
         <button ion-button (click)="moreInfo()">
           <ion-icon name="more" ></ion-icon>
@@ -12,7 +12,7 @@
 <ion-content padding>
     <ion-item>
         <ion-label>Select pre-defined dates</ion-label>
-        <ion-toggle [(ngModel)]="preDefinedDates" color="secondary"></ion-toggle>
+        <ion-toggle [(ngModel)]="preDefinedDates" (ngModelChange)="setPreference($event)"  color="secondary"></ion-toggle>
       </ion-item>
   <div *ngIf="!preDefinedDates">
   <ion-card>

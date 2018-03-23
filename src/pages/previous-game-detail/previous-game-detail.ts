@@ -21,6 +21,15 @@ export class PreviousGameDetailPage {
   }
 
   gameEmotions(){
+
+   if(this.game.preEmotions == null){
+    this.game.preEmotions = 'None';
+   } 
+
+   if(this.game.postEmotions == null){
+    this.game.postEmotions = 'None';
+   } 
+    
    let alert = this.alertCtrl.create({
       title: "Your emotions from game",
       message: ` 
