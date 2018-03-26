@@ -8,7 +8,7 @@
 ### :point_right: ionic serve --lab
 
 
-### To run as a mobile application either or physical device or emulator
+### To run as a mobile application either physical device or emulator
 ### Android
 ### :point_right: ionic cordova run android  :point_left:
 ### OR
